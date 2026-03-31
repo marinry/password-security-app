@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata and page setup -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Strength Checker</title>
+
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+
+<body>
+  <!-- Main container for the app -->
+  <div class="container">
+
+    <!-- Title and description -->
+    <h1>Password Strength Checker</h1>
+    <p>Enter a password to evaluate its strength and security risks.</p>
+
+    <!-- Password input field -->
+    <label for="password">Password</label>
+    <input 
+      type="password" 
+      id="password" 
+      placeholder="Enter password"
+    />
+
+    <!-- Button to trigger password check -->
+    <button id="checkBtn">Check Strength</button>
+
+    <!-- Results section -->
+    <div class="results">
+
+      <h2>Results</h2>
+
+      <!-- Strength output -->
+      <p><strong>Strength:</strong> 
+        <span id="strength">Not checked yet</span>
+      </p>
+
+      <!-- Attack type output -->
+      <p><strong>Likely Attack:</strong> 
+        <span id="attackType">N/A</span>
+      </p>
+
+      <!-- Strength bar visualization -->
+      <div class="strength-bar">
+        <div id="strengthFill"></div>
+      </div>
+
+      <!-- Feedback list -->
+      <h3>Feedback</h3>
+      <ul id="feedbackList">
+        <li>No feedback yet.</li>
+      </ul>
+
+    </div>
+  </div>
+
+  <!-- Link to JavaScript -->
+  <script src="styles/main.js"></script>
+</body>
+</html>
