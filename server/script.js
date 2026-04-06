@@ -165,11 +165,148 @@ function updateScannerUI(res) {
     });
 }
 
-        }
+/* ══════════════════════════════════════════
+   COMPARE
+══════════════════════════════════════════ */
 
-        response.feedback.forEach(item => {
-            feedbackList.append("<li>" + item + "</li>");
-        });
-    }
+// Visibility toggles on compare inputs
+$('#toggleCompare1').on('click', function() {
+    var $i = $('#compareInput1');
+    $i.attr('type', $i.attr('type') === 'password' ? 'text' : 'password');
+    $(this).text($i.attr('type') === 'password' ? 'visibility' : 'visibility_off');
+});
+$('#toggleCompare2').on('click', function() {
+    var $i = $('#compareInput2');
+    $i.attr('type', $i.attr('type') === 'password' ? 'text' : 'password');
+    $(this).text($i.attr('type') === 'password' ? 'visibility' : 'visibility_off');
 });
 
+function levenshtein(a, b) {
+    var m = a.length, n = b.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+        dp[i] = [];
+        for (var j = 0; j <= n; j++) {
+            dp[i][j] = i === 0 ? j : j === 0 ? i : 0;
+        }
+    }
+    for (var i = 1; i <= m; i++) {
+        for (var j = 1; j <= n; j++) {
+            dp[i][j] = a[i-1] === b[j-1]
+                ? dp[i-1][j-1]
+                : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+        }
+    }
+    return dp[m][n];
+}
+
+function similarityPct(a, b) {
+    if (!a && !b) return 0;
+    var maxLen = Math.max(a.length, b.length);
+    if (maxLen === 0) return 100;
+    return Math.round((1 - levenshtein(a, b) / maxLen) * 100);
+}
+
+function escHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+$('#compareInput1, #compareInput2').on('input', function() {
+    var pw1 = $('#compareInput1').val();
+    var pw2 = $('#compareInput2').val();
+    if (!pw1 || !pw2) return;
+
+    var pct  = similarityPct(pw1, pw2);
+    var dist = levenshtein(pw1, pw2);
+    var now  = new Date().toTimeString().slice(0, 8);
+
+    // Find common prefix
+    var prefixLen = 0;
+    while (prefixLen < pw1.length && prefixLen < pw2.length && pw1[prefixLen] === pw2[prefixLen]) {
+        prefixLen++;
+    }
+    var prefix = pw1.slice(0, prefixLen);
+    var rest1  = pw1.slice(prefixLen);
+    var rest2  = pw2.slice(prefixLen);
+
+    // Gauge + bar
+    $('#comparePct').text(pct + '%');
+    var circumference = 2 * Math.PI * 70; // ~440
+    $('#compareCircleBar').css('stroke-dashoffset', circumference - (circumference * pct / 100));
+    $('#compareBarFill').css('width', pct + '%');
+    $('#compareBarPct').text(pct + '%');
+
+    // Risk label + colour
+    var riskLabel, riskClass;
+    if (pct >= 70)      { riskLabel = 'HIGH RISK';  riskClass = 'text-error'; }
+    else if (pct >= 40) { riskLabel = 'MODERATE';   riskClass = 'text-tertiary'; }
+    else                { riskLabel = 'LOW RISK';    riskClass = 'text-primary'; }
+    $('#compareRiskLabel').text(riskLabel).attr('class', 'font-headline text-2xl font-bold tracking-tight mb-2 ' + riskClass);
+    // Also update circle colour
+    $('#compareCircleBar').attr('class', riskClass);
+
+    // Overlap highlight — matching chars in green, differing in white
+    function buildHighlight(prefix, rest) {
+        var html = '';
+        if (prefix) {
+            html += '<span class="text-primary border-b-2 border-primary/50 pb-1">' + escHtml(prefix) + '</span>';
+        }
+        if (rest) {
+            html += '<span class="text-on-surface">' + escHtml(rest) + '</span>';
+        }
+        return html;
+    }
+    $('#overlapPw1').html(buildHighlight(prefix, rest1));
+    $('#overlapPw2').html(buildHighlight(prefix, rest2));
+
+    // Log
+    var $log = $('#compareLog').empty();
+    $log.append('<p><span class="text-outline">[' + now + ']</span> Scan started...</p>');
+    if (prefixLen > 0) {
+        $log.append('<p><span class="text-outline">[' + now + ']</span> <span class="text-primary">MATCH:</span> Shared prefix \'' + escHtml(prefix) + '\' (' + prefixLen + ' chars)</p>');
+    } else {
+        $log.append('<p><span class="text-outline">[' + now + ']</span> No shared prefix found.</p>');
+    }
+    $log.append('<p><span class="text-outline">[' + now + ']</span> Edit distance: ' + dist + ' character' + (dist !== 1 ? 's' : '') + '</p>');
+    $log.append('<p><span class="text-outline">[' + now + ']</span> Similarity: ' + pct + '%</p>');
+    var resultColor = pct >= 70 ? '#ffb4ab' : pct >= 40 ? '#ffb4aa' : '#00e1ab';
+    $log.append('<p><span class="text-outline">[' + now + ']</span> Result: <span style="color:' + resultColor + ';font-weight:bold;">' + riskLabel + '</span></p>');
+
+    // Ladder prediction
+    var numMatch1 = pw1.match(/(\d+)/);
+    var numMatch2 = pw2.match(/(\d+)/);
+    var v3 = '???';
+    if (numMatch1 && numMatch2) {
+        var n1 = parseInt(numMatch1[1]);
+        var n2 = parseInt(numMatch2[1]);
+        var diff = n2 - n1;
+        if (diff !== 0) {
+            v3 = pw2.replace(numMatch2[0], String(n2 + diff));
+        }
+    }
+    $('#ladderV1').text(pw1);
+    $('#ladderV2').text(pw2);
+    $('#ladderV3').text(v3);
+
+    // Individual strength from server
+    analyzeForCompare('#compareStrength1', '#compareCrack1', pw1);
+    analyzeForCompare('#compareStrength2', '#compareCrack2', pw2);
+});
+
+function analyzeForCompare(strengthSel, crackSel, pw) {
+    $.ajax({
+        url: API + '/analyze',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ password: pw }),
+        success: function(res) {
+            var crackMap = { Weak: '< 1s', Medium: '~3h', Strong: '234+ yrs' };
+            var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+            $(strengthSel).text(res.strength).css('color', colorMap[res.strength] || '');
+            $(crackSel).text(crackMap[res.strength] || '—');
+        }
+    });
+}
