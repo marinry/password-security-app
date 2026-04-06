@@ -81,6 +81,186 @@
 
     <main class="mt-20 px-4">
 
+        <!-- ═══════════════════════════════════════
+             SCANNER VIEW
+        ═══════════════════════════════════════ -->
+        <section id="scanner" class="view active">
+            <div class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen">
+                <script>
+                    tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                            extend: {
+                                "colors": {
+                                    "surface-container-highest": "#32353c",
+                                    "on-tertiary-fixed-variant": "#930005",
+                                    "surface": "#10131a",
+                                    "on-background": "#e1e2eb",
+                                    "on-secondary-fixed-variant": "#3c475d",
+                                    "inverse-primary": "#006c50",
+                                    "surface-tint": "#00e1ab",
+                                    "surface-dim": "#10131a",
+                                    "primary-fixed": "#36ffc4",
+                                    "inverse-surface": "#e1e2eb",
+                                    "tertiary-container": "#3e0001",
+                                    "secondary": "#bbc6e2",
+                                    "secondary-container": "#3e4960",
+                                    "surface-container-low": "#191c22",
+                                    "surface-container": "#1d2026",
+                                    "on-tertiary": "#690003",
+                                    "on-tertiary-container": "#f7352b",
+                                    "on-error": "#690005",
+                                    "outline": "#8e9196",
+                                    "background": "#10131a",
+                                    "secondary-fixed": "#d7e2ff",
+                                    "primary-container": "#001f15",
+                                    "tertiary-fixed-dim": "#ffb4aa",
+                                    "on-surface": "#e1e2eb",
+                                    "on-primary-fixed": "#002116",
+                                    "surface-bright": "#363940",
+                                    "on-tertiary-fixed": "#410001",
+                                    "on-secondary-container": "#adb8d3",
+                                    "on-primary-container": "#009570",
+                                    "tertiary": "#ffb4aa",
+                                    "on-surface-variant": "#c4c6cc",
+                                    "on-secondary-fixed": "#101b30",
+                                    "on-primary": "#003828",
+                                    "error": "#ffb4ab",
+                                    "surface-variant": "#32353c",
+                                    "surface-container-high": "#272a31",
+                                    "primary": "#00e1ab",
+                                    "on-error-container": "#ffdad6",
+                                    "inverse-on-surface": "#2e3037",
+                                    "secondary-fixed-dim": "#bbc6e2",
+                                    "error-container": "#93000a",
+                                    "on-primary-fixed-variant": "#00513c",
+                                    "tertiary-fixed": "#ffdad5",
+                                    "on-secondary": "#263046",
+                                    "outline-variant": "#44474c",
+                                    "surface-container-lowest": "#0b0e14",
+                                    "primary-fixed-dim": "#00e1ab"
+                                },
+                                "borderRadius": {
+                                    "DEFAULT": "0.125rem",
+                                    "lg": "0.25rem",
+                                    "xl": "0.5rem",
+                                    "full": "0.75rem"
+                                },
+                                "fontFamily": {
+                                    "headline": ["Space Grotesk"],
+                                    "body": ["Manrope"],
+                                    "label": ["Manrope"]
+                                }
+                            },
+                        }
+                    }
+                </script>
+
+                <main class="max-w-7xl mx-auto px-6 pt-8 pb-12">
+
+                    <!-- Hero -->
+                    <section class="mb-12">
+                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div>
+                                <p class="text-primary font-headline text-xs tracking-[0.3em] uppercase mb-2">Security Module // 0xAF4</p>
+                                <h1 class="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-background">Password Analyzer</h1>
+                            </div>
+                            <!-- Replaced "Protocol Status / AEGIS ACTIVE" with live strength readout -->
+                            <div class="bg-surface-container-low px-4 py-2 border-l-2 border-primary/40">
+                                <p class="text-[10px] text-secondary/60 uppercase tracking-widest font-bold">Current Password</p>
+                                <p class="text-primary font-headline font-bold" id="headerStrength">No input yet</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Bento grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-8 space-y-6">
+
+                            <!-- Input card -->
+                            <div class="relative bg-surface-container p-8 rounded-lg overflow-hidden border border-outline-variant/10 shadow-2xl">
+                                <div class="scanning-line"></div>
+                                <div class="flex flex-col gap-6">
+
+                                    <!-- Removed "Vector Input Source" label and SSL badge, replaced with plain label + show/hide toggle -->
+                                    <div class="flex justify-between items-center">
+                                        <label class="font-headline text-sm font-bold uppercase tracking-widest text-secondary/80" for="passwordInput">Enter Password</label>
+                                        <button id="toggleVisibility" class="text-[10px] font-mono text-primary/60 border border-primary/20 hover:bg-primary/5 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-sm">visibility</span>
+                                            SHOW
+                                        </button>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div class="relative">
+                                            <input
+                                                class="w-full bg-surface-container-highest border-none p-6 rounded-lg text-2xl font-mono text-primary placeholder:text-surface-variant focus:ring-2 focus:ring-primary/40 transition-all"
+                                                id="passwordInput" placeholder="Type a password..." type="password" />
+                                        </div>
+                                        <!-- Compare toggle section (hidden by default) -->
+                                        <div class="hidden" id="compareSection">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="material-symbols-outlined text-xs text-primary/60">compare_arrows</span>
+                                                <label class="text-[10px] font-mono text-secondary/40 uppercase tracking-widest">Compare with a variation</label>
+                                            </div>
+                                            <div class="relative">
+                                                <input
+                                                    class="w-full bg-surface-container-highest/50 border border-outline-variant/10 p-4 rounded-lg text-xl font-mono text-secondary placeholder:text-surface-variant/40 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                    placeholder="Enter a variation..." type="password" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Entropy bar -->
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-secondary uppercase tracking-widest">Strength</span>
+                                            <span class="text-xs font-bold text-primary font-headline uppercase" id="strength">Score: 84 / Optimal</span>
+                                        </div>
+                                        <div class="grid grid-cols-10 gap-1.5 h-3" id="entropyBars">
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
+                                            <div class="bg-surface-container-highest rounded-sm transition-all duration-500"></div>
+                                            <div class="bg-surface-container-highest rounded-sm transition-all duration-500"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scanner log -->
+                            <div class="bg-surface-container-lowest rounded-lg border border-primary/20 overflow-hidden group">
+                                <div class="bg-primary/5 px-4 py-2 border-b border-primary/10 flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                                        <p class="font-headline text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Real-Time Scanner</p>
+                                    </div>
+                                    <span class="text-[9px] font-mono text-secondary/30 uppercase">Node: 0x44-AF</span>
+                                </div>
+                                <div class="p-6 relative">
+                                    <div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px] z-10 transition-opacity duration-500" id="scanner-placeholder">
+                                        <div class="text-center">
+                                            <span class="material-symbols-outlined text-primary/20 text-4xl mb-2 block">keyboard</span>
+                                            <p class="text-[10px] font-mono text-secondary/40 uppercase tracking-[0.3em]">Waiting for input stream...</p>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4 font-mono text-[11px] leading-relaxed opacity-40 select-none" id="scanner-log">
+                                        <p class="flex gap-4"><span>[14:28:01]</span> <span class="text-primary/60">INIT_SCAN_SEQUENCE: IDENTIFYING CHARACTER VARIANTS...</span></p>
+                                        <p class="flex gap-4"><span>[14:28:02]</span> <span class="text-primary/60">PATTERN_RECOGNITION: CHECKING COMMON DICTIONARY VECTORS...</span></p>
+                                        <p class="flex gap-4"><span>[14:28:02]</span> <span class="text-secondary/40">CALCULATING SHANNON ENTROPY SCORE: 4.2 bits/symbol</span></p>
+                                        <p class="flex gap-4"><span>[14:28:03]</span> <span class="text-error/60">VULNERABILITY DETECTED: BRUTE_FORCE_RESISTANCE LOW</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="script.js"></script>
 </body>
