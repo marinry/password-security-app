@@ -260,6 +260,85 @@
 
                         </div>
 
+                        <!-- Right col -->
+                        <div class="lg:col-span-4 space-y-6">
+
+                            <div class="bg-surface-container p-6 rounded-lg border border-outline-variant/10">
+                                <h3 class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-6">Analysis</h3>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="bg-surface-container-low p-4 rounded border-l-2 border-primary/20">
+                                        <p class="text-[10px] text-secondary/40 uppercase mb-1">Time to Crack</p>
+                                        <p class="text-2xl font-headline font-bold text-primary" id="crackTime">234 Years</p>
+                                    </div>
+                                    <div class="bg-surface-container-low p-4 rounded border-l-2 border-secondary/20">
+                                        <p class="text-[10px] text-secondary/40 uppercase mb-1">Strength Score</p>
+                                        <p class="text-2xl font-headline font-bold text-on-background" id="strengthScore">84<span class="text-sm font-normal text-secondary/40 ml-1">/100</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-surface-container p-6 rounded-lg border border-outline-variant/10">
+                                <h3 class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-4">What to Fix</h3>
+                                <div class="space-y-4" id="feedbackList">
+                                    <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="material-symbols-outlined text-primary text-xl">security</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Brute Force Resistance</p>
+                                        </div>
+                                        <p class="text-secondary/60 text-xs leading-relaxed">
+                                            <span class="text-primary/80 font-bold">CRITICAL:</span> Low character diversity makes this an easy target for basic permutations. Current keyspace is too small for GPU clusters.
+                                        </p>
+                                    </div>
+                                    <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="material-symbols-outlined text-error/60 text-xl">book</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Dictionary Attack Risk</p>
+                                        </div>
+                                        <p class="text-secondary/60 text-xs leading-relaxed">
+                                            <span class="text-error/80 font-bold">FAIL:</span> Common word sequences detected. Modern attackers use multi-terabyte wordlists to crack these in milliseconds.
+                                        </p>
+                                    </div>
+                                    <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="material-symbols-outlined text-tertiary text-xl">grid_view</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Keyboard Patterns</p>
+                                        </div>
+                                        <p class="text-secondary/60 text-xs leading-relaxed">
+                                            <span class="text-tertiary/80 font-bold">WARNING:</span> Patterns like "qwerty" or sequential numbers are prioritised in cracking algorithms.
+                                        </p>
+                                    </div>
+                                    <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="material-symbols-outlined text-secondary/40 text-xl">straighten</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Length</p>
+                                        </div>
+                                        <p class="text-secondary/60 text-xs leading-relaxed">
+                                            Passwords over 12 characters are significantly harder to crack offline.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rotating tips -->
+                            <div class="bg-primary/5 p-6 rounded-lg border border-primary/10">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary text-sm">lightbulb</span>
+                                        <p class="text-xs font-bold text-primary uppercase">Tip</p>
+                                    </div>
+                                    <button id="nextTip" class="text-primary/40 hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-secondary/80 leading-relaxed italic" id="tipText"></p>
+                            </div>
+
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="script.js"></script>
