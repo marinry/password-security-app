@@ -42,6 +42,16 @@ $(document).ready(function() {
     }, 10000);
 });
 
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+function switchView(viewId) {
+    $('.view').removeClass('active');
+    $('#' + viewId).addClass('active');
+    $('.nav-item').removeClass('active');
+    $('#nav-' + viewId).addClass('active');
+}
+
 
         $.ajax({
             url: 'http://localhost:3000/analyze',
