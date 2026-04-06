@@ -52,6 +52,42 @@ function switchView(viewId) {
     $('#nav-' + viewId).addClass('active');
 }
 
+/* ══════════════════════════════════════════
+   SCANNER
+══════════════════════════════════════════ */
+var passwordInput     = document.getElementById('passwordInput');
+var scannerPlaceholder = document.getElementById('scanner-placeholder');
+var scannerLog        = document.getElementById('scanner-log');
+
+if (passwordInput) {
+    passwordInput.addEventListener('input', function(e) {
+        if (e.target.value.length > 0) {
+            scannerPlaceholder.classList.add('opacity-0', 'pointer-events-none');
+            scannerLog.classList.remove('opacity-40');
+            scannerLog.classList.add('opacity-100');
+        } else {
+            scannerPlaceholder.classList.remove('opacity-0', 'pointer-events-none');
+            scannerLog.classList.add('opacity-40');
+            scannerLog.classList.remove('opacity-100');
+        }
+    });
+}
+
+// Visibility toggle
+$('#toggleVisibility').on('click', function() {
+    var $pw = $('#passwordInput');
+    var $icon = $(this).find('.material-symbols-outlined');
+    if ($pw.attr('type') === 'password') {
+        $pw.attr('type', 'text');
+        $icon.text('visibility_off');
+        $(this).contents().filter(function() { return this.nodeType === 3; }).last().replaceWith(' HIDE');
+    } else {
+        $pw.attr('type', 'password');
+        $icon.text('visibility');
+        $(this).contents().filter(function() { return this.nodeType === 3; }).last().replaceWith(' SHOW');
+    }
+});
+
 
         $.ajax({
             url: 'http://localhost:3000/analyze',
