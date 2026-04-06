@@ -88,38 +88,83 @@ $('#toggleVisibility').on('click', function() {
     }
 });
 
+$('#passwordInput').on('input', function() {
+    var password = $(this).val();
+    if (!password) {
+        resetScannerUI();
+        $('#headerStrength').text('No input yet').css('color', '');
+        return;
+    }
 
-        $.ajax({
-            url: 'http://localhost:3000/analyze',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({password: password}),
+    $.ajax({
+        url: API + '/analyze',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ password: password }),
+        success: function(res) {
+            updateScannerUI(res);
+            var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+            $('#headerStrength').text(res.strength).css('color', colorMap[res.strength] || '');
+        },
+        error: function() {
+            $('#feedbackList').html('<p class="text-error/60 text-xs font-mono p-2">Cannot reach server — is node server.js running?</p>');
+        }
+    });
+});
 
-            success: function (response) {
-                updateUI(response);
-            },
+function resetScannerUI() {
+    $('#strength').text('Score: 84 / Optimal').css('color', '');
+    $('#crackTime').text('234 Years');
+    $('#strengthScore').html('84<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+    $('#entropyBars div').each(function(i) {
+        if (i < 8) {
+            $(this).removeClass('bg-surface-container-highest').addClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]');
+        } else {
+            $(this).removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]').addClass('bg-surface-container-highest');
+        }
+    });
+}
 
-            error: function () {
-                $('#feedbackList').html("<li>Error connecting to server</li>");
-            }
-        });
+function updateScannerUI(res) {
+    var scoreMap = { Weak: 24,  Medium: 58, Strong: 91 };
+    var crackMap = { Weak: '< 1 Second', Medium: '~3 Hours', Strong: '234+ Years' };
+    var barMap   = { Weak: 3,   Medium: 6,  Strong: 10 };
+    var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+
+    $('#strength').text('Score: ' + res.strength).css('color', colorMap[res.strength] || '');
+    $('#crackTime').text(crackMap[res.strength] || '—');
+    $('#strengthScore').html((scoreMap[res.strength] || '—') + '<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+
+    var filled = barMap[res.strength] || 0;
+    $('#entropyBars div').each(function(i) {
+        if (i < filled) {
+            $(this).removeClass('bg-surface-container-highest').addClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]');
+        } else {
+            $(this).removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]').addClass('bg-surface-container-highest');
+        }
     });
 
-    function updateUI(response) {
-        const strengthText = $('#strength');
-        const feedbackList = $('#feedbackList');
+    var $list = $('#feedbackList').empty();
+    var iconMap = {
+        'Add uppercase letters':     { icon: 'title',      cls: 'text-error/60' },
+        'Add numbers':               { icon: 'pin',        cls: 'text-error/60' },
+        'Use at least 8 characters': { icon: 'straighten', cls: 'text-tertiary'  },
+        'Strong password':           { icon: 'verified',   cls: 'text-primary'  }
+    };
 
-        strengthText.text("Strength: " + response.strength);
-        feedbackList.empty();
+    res.feedback.forEach(function(msg) {
+        var meta = iconMap[msg] || { icon: 'info', cls: 'text-secondary/40' };
+        $list.append(
+            '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+                '<div class="flex items-center gap-3 mb-2">' +
+                    '<span class="material-symbols-outlined ' + meta.cls + ' text-xl">' + meta.icon + '</span>' +
+                    '<p class="text-sm text-on-background font-bold uppercase tracking-tight">' + msg + '</p>' +
+                '</div>' +
+            '</div>'
+        );
+    });
+}
 
-        strengthText.removeClass("weak medium strong");
-
-        if(response.strength === "Weak") {
-            strengthText.addClass("weak");
-        } else if(response.strength === "Medium") {
-            strengthText.addClass("medium");
-        } else if(response.strength === "Strong") {
-            strengthText.addClass("strong");
         }
 
         response.feedback.forEach(item => {
