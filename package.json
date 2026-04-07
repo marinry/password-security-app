@@ -3,7 +3,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1"
   },
-  "name": "server",
+  "name": "password-security-app",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
