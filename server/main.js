@@ -1,4 +1,5 @@
-const API = 'http://localhost:3000';
+//const API = 'http://localhost:3000';
+const API = 'https://password-security-app-production-465c.up.railway.app';
 
 /* ══════════════════════════════════════════
    TIPS
