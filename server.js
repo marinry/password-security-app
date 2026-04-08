@@ -17,6 +17,7 @@ app.post('/analyze', (req, res) => {
     let attackType = 'Unknown';
     let crackTime = 'Unknown';
 
+    // Score calculation
     if (password.length >= 8) score += 20;
     if (password.length >= 12) score += 10;
     if (/[A-Z]/.test(password)) score += 20;
@@ -24,6 +25,7 @@ app.post('/analyze', (req, res) => {
     if (/[0-9]/.test(password)) score += 15;
     if (/[^A-Za-z0-9]/.test(password)) score += 20;
 
+    // Attack type detection
     if (/password|admin|qwerty|letmein|welcome/i.test(password)) {
         attackType = 'Dictionary Attack';
         feedback.push('Avoid common words or known weak passwords');
@@ -40,6 +42,7 @@ app.post('/analyze', (req, res) => {
     }
 
 
+    // Strength rating
     if (score >= 70) {
     strength = 'Strong';
     } else if (score >= 40) {
@@ -48,6 +51,7 @@ app.post('/analyze', (req, res) => {
     strength = 'Weak';
     }
 
+    // Crack time estimation
     if (score >= 85) {
         crackTime = 'Many years';
     } else if (score >= 65) {
@@ -58,9 +62,13 @@ app.post('/analyze', (req, res) => {
         crackTime = '< 1 second';
 }
 
+    // Feedback for improvement
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
     if (!/[0-9]/.test(password))  feedback.push('Add numbers');
     if (password.length < 8)      feedback.push('Use at least 8 characters');
+    if (!/[a-z]/.test(password)) feedback.push('Add lowercase letters');
+    if (!/[^A-Za-z0-9]/.test(password)) feedback.push('Add special characters');
+    if (password.length >= 8 && password.length < 12) feedback.push('Consider using 12 or more characters for better security');
 
     if (feedback.length === 0) {
         feedback.push('Strong password');
