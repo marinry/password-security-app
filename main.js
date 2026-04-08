@@ -105,65 +105,105 @@ $('#passwordInput').on('input', function() {
         success: function(res) {
             updateScannerUI(res);
             var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
-            $('#headerStrength').text(res.strength).css('color', colorMap[res.strength] || '');
+            $('#headerStrength').text(res.strength + ' • ' + (res.attackType || 'Unknown Risk'))
+                       .css('color', colorMap[res.strength] || '');
         },
         error: function() {
-            $('#feedbackList').html('<p class="text-error/60 text-xs font-mono p-2">Cannot reach server — is node server.js running?</p>');
+             $('#feedbackList').html(
+        '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+            '<div class="flex items-center gap-3 mb-2">' +
+                '<span class="material-symbols-outlined text-error/60 text-xl">warning</span>' +
+                '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Server Error</p>' +
+            '</div>' +
+            '<p class="text-secondary/60 text-xs leading-relaxed">Cannot reach the analysis server.</p>' +
+        '</div>'
+            );
         }
     });
 });
 
 function resetScannerUI() {
-    $('#strength').text('Score: 84 / Optimal').css('color', '');
-    $('#crackTime').text('234 Years');
-    $('#strengthScore').html('84<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
-    $('#entropyBars div').each(function(i) {
-        if (i < 8) {
-            $(this).removeClass('bg-surface-container-highest').addClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]');
-        } else {
-            $(this).removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]').addClass('bg-surface-container-highest');
-        }
+    $('#strength').text('Awaiting analysis').css('color', '');
+    $('#crackTime').text('—');
+    $('#strengthScore').html('—<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+
+    $('#entropyBars div').each(function() {
+        $(this)
+            .removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]')
+            .addClass('bg-surface-container-highest');
     });
+
+    $('#feedbackList').html(
+        '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+            '<div class="flex items-center gap-3 mb-2">' +
+                '<span class="material-symbols-outlined text-secondary/40 text-xl">info</span>' +
+                '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Waiting for input</p>' +
+            '</div>' +
+            '<p class="text-secondary/60 text-xs leading-relaxed">Type a password to begin analysis.</p>' +
+        '</div>'
+    );
 }
 
 function updateScannerUI(res) {
-    var scoreMap = { Weak: 24,  Medium: 58, Strong: 91 };
-    var crackMap = { Weak: '< 1 Second', Medium: '~3 Hours', Strong: '234+ Years' };
-    var barMap   = { Weak: 3,   Medium: 6,  Strong: 10 };
     var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+    var score = res.score || 0;
+    var filled = Math.max(1, Math.ceil(score / 10));
 
-    $('#strength').text('Score: ' + res.strength).css('color', colorMap[res.strength] || '');
-    $('#crackTime').text(crackMap[res.strength] || '—');
-    $('#strengthScore').html((scoreMap[res.strength] || '—') + '<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+    $('#strength').text((res.strength || 'Unknown') + ' • ' + (res.attackType || 'Unknown Risk'))
+                  .css('color', colorMap[res.strength] || '');
 
-    var filled = barMap[res.strength] || 0;
+    $('#crackTime').text(res.crackTime || '—');
+    $('#strengthScore').html(score + '<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+
     $('#entropyBars div').each(function(i) {
         if (i < filled) {
-            $(this).removeClass('bg-surface-container-highest').addClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]');
+            $(this)
+                .removeClass('bg-surface-container-highest')
+                .addClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]');
         } else {
-            $(this).removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]').addClass('bg-surface-container-highest');
+            $(this)
+                .removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]')
+                .addClass('bg-surface-container-highest');
         }
     });
 
     var $list = $('#feedbackList').empty();
+
     var iconMap = {
-        'Add uppercase letters':     { icon: 'title',      cls: 'text-error/60' },
-        'Add numbers':               { icon: 'pin',        cls: 'text-error/60' },
-        'Use at least 8 characters': { icon: 'straighten', cls: 'text-tertiary'  },
-        'Strong password':           { icon: 'verified',   cls: 'text-primary'  }
+        'Add uppercase letters': { icon: 'title', cls: 'text-error/60' },
+        'Add lowercase letters': { icon: 'text_fields', cls: 'text-error/60' },
+        'Add numbers': { icon: 'pin', cls: 'text-error/60' },
+        'Add special characters': { icon: 'emergency', cls: 'text-tertiary' },
+        'Use at least 8 characters': { icon: 'straighten', cls: 'text-tertiary' },
+        'Consider using 12 or more characters for better security': { icon: 'expand', cls: 'text-secondary/40' },
+        'Avoid common words or known weak passwords': { icon: 'menu_book', cls: 'text-error/60' },
+        'Avoid predictable sequences or keyboard patterns': { icon: 'grid_view', cls: 'text-tertiary' },
+        'Avoid repeated characters like aaa or 111': { icon: 'repeat', cls: 'text-tertiary' },
+        'Strong password': { icon: 'verified', cls: 'text-primary' }
     };
 
-    res.feedback.forEach(function(msg) {
-        var meta = iconMap[msg] || { icon: 'info', cls: 'text-secondary/40' };
+    if (res.feedback && res.feedback.length > 0) {
+        res.feedback.forEach(function(msg) {
+            var meta = iconMap[msg] || { icon: 'info', cls: 'text-secondary/40' };
+            $list.append(
+                '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+                    '<div class="flex items-center gap-3 mb-2">' +
+                        '<span class="material-symbols-outlined ' + meta.cls + ' text-xl">' + meta.icon + '</span>' +
+                        '<p class="text-sm text-on-background font-bold uppercase tracking-tight">' + msg + '</p>' +
+                    '</div>' +
+                '</div>'
+            );
+        });
+    } else {
         $list.append(
             '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
                 '<div class="flex items-center gap-3 mb-2">' +
-                    '<span class="material-symbols-outlined ' + meta.cls + ' text-xl">' + meta.icon + '</span>' +
-                    '<p class="text-sm text-on-background font-bold uppercase tracking-tight">' + msg + '</p>' +
+                    '<span class="material-symbols-outlined text-secondary/40 text-xl">info</span>' +
+                    '<p class="text-sm text-on-background font-bold uppercase tracking-tight">No feedback available</p>' +
                 '</div>' +
             '</div>'
         );
-    });
+    }
 }
 
 /* ══════════════════════════════════════════
@@ -304,10 +344,9 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
         contentType: 'application/json',
         data: JSON.stringify({ password: pw }),
         success: function(res) {
-            var crackMap = { Weak: '< 1s', Medium: '~3h', Strong: '234+ yrs' };
-            var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
-            $(strengthSel).text(res.strength).css('color', colorMap[res.strength] || '');
-            $(crackSel).text(crackMap[res.strength] || '—');
+           var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+            $(strengthSel).text(res.strength || 'Unknown').css('color', colorMap[res.strength] || '');
+            $(crackSel).text(res.crackTime || '—');
         }
     });
 }
