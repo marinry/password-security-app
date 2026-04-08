@@ -13,13 +13,21 @@ app.post('/analyze', (req, res) => {
     const password = req.body.password || '';
     let strength = 'Weak';
     let feedback = [];
+    let score = 0;
 
-    if (password.length >= 8) {
-        strength = 'Medium';
-    }
+    if (password.length >= 8) score += 20;
+    if (password.length >= 12) score += 10;
+    if (/[A-Z]/.test(password)) score += 20;
+    if (/[a-z]/.test(password)) score += 15;
+    if (/[0-9]/.test(password)) score += 15;
+    if (/[^A-Za-z0-9]/.test(password)) score += 20;
 
-    if (/[A-Z]/.test(password) && /[0-9]/.test(password) && password.length >= 8) {
-        strength = 'Strong';
+    if (score >= 70) {
+    strength = 'Strong';
+    } else if (score >= 40) {
+    strength = 'Medium';
+    } else {
+    strength = 'Weak';
     }
 
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
@@ -30,7 +38,7 @@ app.post('/analyze', (req, res) => {
         feedback.push('Strong password');
     }
 
-    res.json({ strength, feedback });
+    res.json({ strength, score, feedback });
 });
 
 app.listen(PORT, () => {
