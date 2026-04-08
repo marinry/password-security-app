@@ -15,6 +15,7 @@ app.post('/analyze', (req, res) => {
     let feedback = [];
     let score = 0;
     let attackType = 'Unknown';
+    let crackTime = 'Unknown';
 
     if (password.length >= 8) score += 20;
     if (password.length >= 12) score += 10;
@@ -47,6 +48,16 @@ app.post('/analyze', (req, res) => {
     strength = 'Weak';
     }
 
+    if (score >= 85) {
+        crackTime = 'Many years';
+    } else if (score >= 65) {
+        crackTime = 'Several months';
+    } else if (score >= 40) {
+     crackTime = 'A few hours';
+    } else {
+        crackTime = '< 1 second';
+}
+
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
     if (!/[0-9]/.test(password))  feedback.push('Add numbers');
     if (password.length < 8)      feedback.push('Use at least 8 characters');
@@ -55,7 +66,7 @@ app.post('/analyze', (req, res) => {
         feedback.push('Strong password');
     }
 
-    res.json({ strength, score, attackType, feedback });
+    res.json({ strength, score, attackType, crackTime, feedback });
 });
 
 app.listen(PORT, () => {
