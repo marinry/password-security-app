@@ -41,6 +41,9 @@ $(document).ready(function() {
         tipIndex = (tipIndex + 1) % tips.length;
         showTip(tipIndex);
     }, 10000);
+
+    resetScannerUI();
+    $('#headerStrength').text('No input yet').css('color', '');
 });
 
 /* ══════════════════════════════════════════
