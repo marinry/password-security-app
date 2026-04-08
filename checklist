@@ -1,23 +1,23 @@
 PHASE 1 - Core Logic
 Password Analysis
 [x] Add detection for obviously weak passwords (short length, no variety)
-[ ] Add detection for common structures (e.g., "abc123", "qwerty", "password1")
-[ ] Add detection for dictionary‐based weaknesses (simple word check)
-[ ] Add detection for pattern‐based weaknesses (repeated chars, sequences)
-[ ] Add detection for brute‐force vulnerability (based on entropy)
+[x] Add detection for common structures (e.g., "abc123", "qwerty", "password1")
+[x] Add detection for dictionary‐based weaknesses (simple word check)
+[x] Add detection for pattern‐based weaknesses (repeated chars, sequences)
+[/] Add detection for brute‐force vulnerability (based on entropy)
 [/] Add time‐to‐crack estimation (simple offline calculation (this needs to be expanded))
 [x] Add extra warnings (guessable, predictable, reused)
 Password Reuse
 [x] Build comparison logic for multiple password inputs
-[ ] Detect exact matches
+[x] Detect exact matches
 [x] Detect minor variations (e.g., "Password1!" vs "Password2!")
 PHASE 2 — User Feedback & UX (Medium Priority)
 These features improve clarity, usability, and educational value.
 Feedback & Explanations
 [x] Add clear explanations for each weakness (dictionary, brute force, pattern)
-[ ] Add improvement suggestions tied to each issue
-[ ] Add "Analyzing..." loading message for better timing/flow
-[ ] Prevent bad input (empty fields, whitespace, too many passwords)
+[x] Add improvement suggestions tied to each issue
+[/] Add "Analyzing..." loading message for better timing/flow
+[/] Prevent bad input (empty fields, whitespace, too many passwords)
 Scoring & Visual Indicators
 [/] Add optional scoring system (0–100 or weak/medium/strong(also needs to be updated))
 [x] Add color‐changing scale
@@ -35,8 +35,8 @@ These ensure your app behaves correctly in all scenarios.
 Edge Cases
 [ ] Handle extremely long passwords
 [ ] Handle passwords with only symbols or only numbers
-[ ] Handle repeated submissions without refreshing
-[ ] Ensure no sensitive data is stored or logged
+[x] Handle repeated submissions without refreshing
+[/] Ensure no sensitive data is stored or logged
 [ ] Ensure performance stays under 1 second per analysis
 PHASE 5 — Final Deliverables (End of Project)
 These are for grading, not the app itself.
