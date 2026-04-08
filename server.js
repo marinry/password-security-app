@@ -14,6 +14,7 @@ app.post('/analyze', (req, res) => {
     let strength = 'Weak';
     let feedback = [];
     let score = 0;
+    let attackType = 'Unknown';
 
     if (password.length >= 8) score += 20;
     if (password.length >= 12) score += 10;
@@ -21,6 +22,22 @@ app.post('/analyze', (req, res) => {
     if (/[a-z]/.test(password)) score += 15;
     if (/[0-9]/.test(password)) score += 15;
     if (/[^A-Za-z0-9]/.test(password)) score += 20;
+
+    if (/password|admin|qwerty|letmein|welcome/i.test(password)) {
+        attackType = 'Dictionary Attack';
+        feedback.push('Avoid common words or known weak passwords');
+    } else if (/1234|abcd|qwerty|1111|0000/i.test(password)) {
+        attackType = 'Pattern Attack';
+        feedback.push('Avoid predictable sequences or keyboard patterns');
+    } else if (/(.)\1{2,}/.test(password)) {
+        attackType = 'Repetition-Based Guessing';
+        feedback.push('Avoid repeated characters like aaa or 111');
+    } else if (password.length < 8) {
+        attackType = 'Brute Force Attack';
+    } else {
+        attackType = 'Harder to guess';
+    }
+
 
     if (score >= 70) {
     strength = 'Strong';
@@ -38,7 +55,7 @@ app.post('/analyze', (req, res) => {
         feedback.push('Strong password');
     }
 
-    res.json({ strength, score, feedback });
+    res.json({ strength, score, attackType, feedback });
 });
 
 app.listen(PORT, () => {
