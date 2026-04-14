@@ -65,16 +65,18 @@ app.post('/analyze', (req, res) => {
     }
 
     // Crack time estimation
-    if (score >= 85) {
-        crackTime = 'Many years';
-    } else if (score >= 65) {
-        crackTime = 'Several months';
-    } else if (score >= 40) {
-     crackTime = 'A few hours';
-    } else {
-        crackTime = '< 1 second';
-}
+    var GUESSES_PER_SEC = 1e10;
+    var keyspace = Math.pow(charsetSize || 1, password.length);
+    var seconds = (keyspace / 2) / GUESSES_PER_SEC;
 
+    if (seconds < 1)             crackTime = 'Instantly';
+    else if (seconds < 60)       crackTime = Math.round(seconds) + ' seconds';
+    else if (seconds < 3600)     crackTime = Math.round(seconds / 60) + ' minutes';
+    else if (seconds < 86400)    crackTime = Math.round(seconds / 3600) + ' hours';
+    else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
+    else if (seconds < 3.15e11)  crackTime = Math.round(seconds / 31536000) + ' years';
+    else                         crackTime = 'Longer than recorded history';
+    
     // Feedback for improvement
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
     if (!/[0-9]/.test(password))  feedback.push('Add numbers');
