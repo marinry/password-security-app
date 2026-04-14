@@ -25,6 +25,19 @@ app.post('/analyze', (req, res) => {
     if (/[0-9]/.test(password)) score += 15;
     if (/[^A-Za-z0-9]/.test(password)) score += 20;
 
+    // Entropy calculation
+    var charsetSize = 0;
+    if (/[a-z]/.test(password)) charsetSize += 26;
+    if (/[A-Z]/.test(password)) charsetSize += 26;
+    if (/[0-9]/.test(password)) charsetSize += 10;
+    if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 32;
+    var entropy = password.length * Math.log2(charsetSize || 1);
+
+    if (entropy < 28 && attackType === 'Harder to guess') {
+        attackType = 'Brute Force Attack';
+        feedback.push('Very low entropy - trivial to brute force');
+    }
+
     // Attack type detection
     if (/password|admin|qwerty|letmein|welcome/i.test(password)) {
         attackType = 'Dictionary Attack';
