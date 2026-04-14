@@ -207,6 +207,20 @@ function updateScannerUI(res) {
             '</div>'
         );
     }
+
+    var $log = $('#scanner-log').empty();
+    if (res.scanLog && res.scanLog.length > 0) {
+        res.scanLog.forEach(function(line) {
+            var cls = line.type === 'error' ? 'text-error/70'
+                    : line.type === 'warn'  ? 'text-tertiary/80'
+                    : line.type === 'pass'  ? 'text-primary/80'
+                    : 'text-secondary/50';
+            $log.append(
+                '<p class="flex gap-4"><span class="text-outline">[' + line.time + ']</span>' +
+                '<span class="' + cls + '">' + line.text + '</span></p>'
+            );
+        });
+    }
 }
 
 /* ══════════════════════════════════════════
@@ -341,6 +355,11 @@ $('#compareInput1, #compareInput2').on('input', function() {
 });
 
 function analyzeForCompare(strengthSel, crackSel, pw) {
+    $('#scanner-log').html(
+        '<p class="flex gap-4"><span class="text-outline">[' + new Date().toTimeString().slice(0,8) + ']</span>' +
+        '<span class="text-secondary/40">Analyzing...</span></p>'
+    );
+    
     $.ajax({
         url: API + '/analyze',
         method: 'POST',

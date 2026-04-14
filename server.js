@@ -10,6 +10,11 @@ app.use(express.static(__dirname));
 console.log('Static files served from:', __dirname);
 
 app.post('/analyze', (req, res) => {
+    var scanLog = [];
+    var now = new Date().toTimeString().slice(0,8);
+    scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
+    scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
+
     const password = req.body.password || '';
     let strength = 'Weak';
     let feedback = [];
@@ -42,16 +47,21 @@ app.post('/analyze', (req, res) => {
     if (/password|admin|qwerty|letmein|welcome/i.test(password)) {
         attackType = 'Dictionary Attack';
         feedback.push('Avoid common words or known weak passwords');
+        scanLog.push({ time: now, type: 'error', text: 'DICTIONARY: Common password pattern matched' });
     } else if (/1234|abcd|qwerty|1111|0000/i.test(password)) {
         attackType = 'Pattern Attack';
         feedback.push('Avoid predictable sequences or keyboard patterns');
+        scanLog.push({ time: now, type: 'error', text: 'PATTERN: Predictable structure detected' });
     } else if (/(.)\1{2,}/.test(password)) {
         attackType = 'Repetition-Based Guessing';
         feedback.push('Avoid repeated characters like aaa or 111');
+        scanLog.push({ time: now, type: 'error', text: 'REPETITION: Repeated characters or sequences found' });
     } else if (password.length < 8) {
         attackType = 'Brute Force Attack';
+        scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low complexity increases guessability' });
     } else {
         attackType = 'Harder to guess';
+        scanLog.push({ time: now, type: 'error', text: 'ASSESSMENT: Password is harder to guess' });
     }
 
 
@@ -76,7 +86,7 @@ app.post('/analyze', (req, res) => {
     else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
     else if (seconds < 3.15e11)  crackTime = Math.round(seconds / 31536000) + ' years';
     else                         crackTime = 'Longer than recorded history';
-    
+
     // Feedback for improvement
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
     if (!/[0-9]/.test(password))  feedback.push('Add numbers');
@@ -89,7 +99,7 @@ app.post('/analyze', (req, res) => {
         feedback.push('Strong password');
     }
 
-    res.json({ strength, score, attackType, crackTime, feedback });
+    res.json({ strength, score, attackType, crackTime, feedback, scanLog });
 });
 
 app.listen(PORT, () => {
