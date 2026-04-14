@@ -10,12 +10,14 @@ app.use(express.static(__dirname));
 console.log('Static files served from:', __dirname);
 
 app.post('/analyze', (req, res) => {
+    const password = req.body.password || '';
+    var entropy = password.length * Math.log2(charsetSize || 1);
+    var charsetSize = 0;
     var scanLog = [];
     var now = new Date().toTimeString().slice(0,8);
     scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
     scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
 
-    const password = req.body.password || '';
     let strength = 'Weak';
     let feedback = [];
     let score = 0;
@@ -31,12 +33,10 @@ app.post('/analyze', (req, res) => {
     if (/[^A-Za-z0-9]/.test(password)) score += 20;
 
     // Entropy calculation
-    var charsetSize = 0;
     if (/[a-z]/.test(password)) charsetSize += 26;
     if (/[A-Z]/.test(password)) charsetSize += 26;
     if (/[0-9]/.test(password)) charsetSize += 10;
     if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 32;
-    var entropy = password.length * Math.log2(charsetSize || 1);
 
     if (entropy < 28 && attackType === 'Harder to guess') {
         attackType = 'Brute Force Attack';
