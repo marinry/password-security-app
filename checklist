@@ -4,8 +4,8 @@ Password Analysis
 [x] Add detection for common structures (e.g., "abc123", "qwerty", "password1")
 [x] Add detection for dictionary‐based weaknesses (simple word check)
 [x] Add detection for pattern‐based weaknesses (repeated chars, sequences)
-[/] Add detection for brute‐force vulnerability (based on entropy)
-[/] Add time‐to‐crack estimation (simple offline calculation (this needs to be expanded))
+[x] Add detection for brute‐force vulnerability (based on entropy)
+[x] Add time‐to‐crack estimation
 [x] Add extra warnings (guessable, predictable, reused)
 Password Reuse
 [x] Build comparison logic for multiple password inputs
@@ -21,7 +21,7 @@ Feedback & Explanations
 Scoring & Visual Indicators
 [/] Add optional scoring system (0–100 or weak/medium/strong(also needs to be updated))
 [x] Add color‐changing scale
-[ ] Add text effects (fade‐in, emphasis on warnings)
+[x] Add text effects (fade‐in, emphasis on warnings)
 [x] Add smooth transitions when results update
 PHASE 3 — UI/Design Polish (Lower Priority but High Impact)
 These are enhancements that make the app feel finished.
@@ -37,7 +37,7 @@ Edge Cases
 [ ] Handle passwords with only symbols or only numbers
 [x] Handle repeated submissions without refreshing
 [/] Ensure no sensitive data is stored or logged
-[ ] Ensure performance stays under 1 second per analysis
+[x] Ensure performance stays under 1 second per analysis
 PHASE 5 — Final Deliverables (End of Project)
 These are for grading, not the app itself.
 Documentation & Presentation
