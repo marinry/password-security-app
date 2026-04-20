@@ -35,8 +35,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .nav-item.active {
@@ -58,20 +65,44 @@
         }
 
         @keyframes scan {
-            0%   { top: 0; }
-            100% { top: 100%; }
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
         }
 
         /* Tip fade transition */
         #tipText {
             transition: opacity 0.5s ease;
         }
+
+        @keyframes swap-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(180deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .swap-btn.animate-swap {
+            animation: swap-rotate 0.45s ease-in-out;
+        }
     </style>
 </head>
 
 <body class="pb-24">
 
-    <header class="fixed top-0 w-full z-50 bg-[#10131a]/80 backdrop-blur-md border-b border-[#00e1ab]/10 px-6 py-4 flex justify-between items-center">
+    <header
+        class="fixed top-0 w-full z-50 bg-[#10131a]/80 backdrop-blur-md border-b border-[#00e1ab]/10 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-[#00e1ab]">security</span>
             <h1 class="font-bold tracking-[0.2em] text-[#00e1ab] text-lg">SENTINEL</h1>
@@ -161,12 +192,16 @@
                     <section class="mb-12">
                         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                             <div>
-                                <p class="text-primary font-headline text-xs tracking-[0.3em] uppercase mb-2">Security Module // 0xAF4</p>
-                                <h1 class="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-background">Password Analyzer</h1>
+                                <p class="text-primary font-headline text-xs tracking-[0.3em] uppercase mb-2">Security
+                                    Module // 0xAF4</p>
+                                <h1
+                                    class="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-background">
+                                    Password Analyzer</h1>
                             </div>
                             <!-- Replaced "Protocol Status / AEGIS ACTIVE" with live strength readout -->
                             <div class="bg-surface-container-low px-4 py-2 border-l-2 border-primary/40">
-                                <p class="text-[10px] text-secondary/60 uppercase tracking-widest font-bold">Current Password</p>
+                                <p class="text-[10px] text-secondary/60 uppercase tracking-widest font-bold">Current
+                                    Password</p>
                                 <p class="text-primary font-headline font-bold" id="headerStrength">No input yet</p>
                             </div>
                         </div>
@@ -177,14 +212,17 @@
                         <div class="lg:col-span-8 space-y-6">
 
                             <!-- Input card -->
-                            <div class="relative bg-surface-container p-8 rounded-lg overflow-hidden border border-outline-variant/10 shadow-2xl">
+                            <div
+                                class="relative bg-surface-container p-8 rounded-lg overflow-hidden border border-outline-variant/10 shadow-2xl">
                                 <div class="scanning-line"></div>
                                 <div class="flex flex-col gap-6">
 
-                                    <!-- Removed "Vector Input Source" label and SSL badge, replaced with plain label + show/hide toggle -->
                                     <div class="flex justify-between items-center">
-                                        <label class="font-headline text-sm font-bold uppercase tracking-widest text-secondary/80" for="passwordInput">Enter Password</label>
-                                        <button id="toggleVisibility" class="text-[10px] font-mono text-primary/60 border border-primary/20 hover:bg-primary/5 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                                        <label
+                                            class="font-headline text-sm font-bold uppercase tracking-widest text-secondary/80"
+                                            for="passwordInput">Enter Password</label>
+                                        <button id="toggleVisibility"
+                                            class="text-[10px] font-mono text-primary/60 border border-primary/20 hover:bg-primary/5 px-2 py-1 rounded transition-colors flex items-center gap-1">
                                             <span class="material-symbols-outlined text-sm">visibility</span>
                                             SHOW
                                         </button>
@@ -199,8 +237,11 @@
                                         <!-- Compare toggle section (hidden by default) -->
                                         <div class="hidden" id="compareSection">
                                             <div class="flex items-center gap-2 mb-2">
-                                                <span class="material-symbols-outlined text-xs text-primary/60">compare_arrows</span>
-                                                <label class="text-[10px] font-mono text-secondary/40 uppercase tracking-widest">Compare with a variation</label>
+                                                <span
+                                                    class="material-symbols-outlined text-xs text-primary/60">compare_arrows</span>
+                                                <label
+                                                    class="text-[10px] font-mono text-secondary/40 uppercase tracking-widest">Compare
+                                                    with a variation</label>
                                             </div>
                                             <div class="relative">
                                                 <input
@@ -213,46 +254,85 @@
                                     <!-- Entropy bar -->
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs font-bold text-secondary uppercase tracking-widest">Strength</span>
-                                            <span class="text-xs font-bold text-primary font-headline uppercase" id="strength">Score: 84 / Optimal</span>
+                                            <span
+                                                class="text-xs font-bold text-secondary uppercase tracking-widest">Strength</span>
+                                            <span class="text-xs font-bold text-primary font-headline uppercase"
+                                                id="strength">Score: 84 / Optimal</span>
                                         </div>
                                         <div class="grid grid-cols-10 gap-1.5 h-3" id="entropyBars">
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]"></div>
-                                            <div class="bg-surface-container-highest rounded-sm transition-all duration-500"></div>
-                                            <div class="bg-surface-container-highest rounded-sm transition-all duration-500"></div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-primary rounded-sm transition-all duration-500 shadow-[0_0_12px_rgba(0,225,171,0.4)]">
+                                            </div>
+                                            <div
+                                                class="bg-surface-container-highest rounded-sm transition-all duration-500">
+                                            </div>
+                                            <div
+                                                class="bg-surface-container-highest rounded-sm transition-all duration-500">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Scanner log -->
-                            <div class="bg-surface-container-lowest rounded-lg border border-primary/20 overflow-hidden group">
-                                <div class="bg-primary/5 px-4 py-2 border-b border-primary/10 flex justify-between items-center">
+                            <div
+                                class="bg-surface-container-lowest rounded-lg border border-primary/20 overflow-hidden group">
+                                <div
+                                    class="bg-primary/5 px-4 py-2 border-b border-primary/10 flex justify-between items-center">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                                        <p class="font-headline text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Real-Time Scanner</p>
+                                        <p
+                                            class="font-headline text-[10px] font-bold text-primary uppercase tracking-[0.2em]">
+                                            Real-Time Scanner</p>
                                     </div>
                                     <span class="text-[9px] font-mono text-secondary/30 uppercase">Node: 0x44-AF</span>
                                 </div>
                                 <div class="p-6 relative">
-                                    <div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px] z-10 transition-opacity duration-500" id="scanner-placeholder">
+                                    <div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px] z-10 transition-opacity duration-500"
+                                        id="scanner-placeholder">
                                         <div class="text-center">
-                                            <span class="material-symbols-outlined text-primary/20 text-4xl mb-2 block">keyboard</span>
-                                            <p class="text-[10px] font-mono text-secondary/40 uppercase tracking-[0.3em]">Waiting for input stream...</p>
+                                            <span
+                                                class="material-symbols-outlined text-primary/20 text-4xl mb-2 block">keyboard</span>
+                                            <p
+                                                class="text-[10px] font-mono text-secondary/40 uppercase tracking-[0.3em]">
+                                                Waiting for input stream...</p>
                                         </div>
                                     </div>
-                                    <div class="space-y-4 font-mono text-[11px] leading-relaxed opacity-40 select-none" id="scanner-log">
-                                        <p class="flex gap-4"><span>[14:28:01]</span> <span class="text-primary/60">INIT_SCAN_SEQUENCE: IDENTIFYING CHARACTER VARIANTS...</span></p>
-                                        <p class="flex gap-4"><span>[14:28:02]</span> <span class="text-primary/60">PATTERN_RECOGNITION: CHECKING COMMON DICTIONARY VECTORS...</span></p>
-                                        <p class="flex gap-4"><span>[14:28:02]</span> <span class="text-secondary/40">CALCULATING SHANNON ENTROPY SCORE: 4.2 bits/symbol</span></p>
-                                        <p class="flex gap-4"><span>[14:28:03]</span> <span class="text-error/60">VULNERABILITY DETECTED: BRUTE_FORCE_RESISTANCE LOW</span></p>
+                                    <div class="space-y-4 font-mono text-[11px] leading-relaxed opacity-40 select-none"
+                                        id="scanner-log">
+                                        <p class="flex gap-4"><span>[14:28:01]</span> <span
+                                                class="text-primary/60">INIT_SCAN_SEQUENCE: IDENTIFYING CHARACTER
+                                                VARIANTS...</span></p>
+                                        <p class="flex gap-4"><span>[14:28:02]</span> <span
+                                                class="text-primary/60">PATTERN_RECOGNITION: CHECKING COMMON DICTIONARY
+                                                VECTORS...</span></p>
+                                        <p class="flex gap-4"><span>[14:28:02]</span> <span
+                                                class="text-secondary/40">CALCULATING SHANNON ENTROPY SCORE: 4.2
+                                                bits/symbol</span></p>
+                                        <p class="flex gap-4"><span>[14:28:03]</span> <span
+                                                class="text-error/60">VULNERABILITY DETECTED: BRUTE_FORCE_RESISTANCE
+                                                LOW</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -263,53 +343,71 @@
                         <div class="lg:col-span-4 space-y-6">
 
                             <div class="bg-surface-container p-6 rounded-lg border border-outline-variant/10">
-                                <h3 class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-6">Analysis</h3>
+                                <h3
+                                    class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-6">
+                                    Analysis</h3>
                                 <div class="grid grid-cols-1 gap-4">
                                     <div class="bg-surface-container-low p-4 rounded border-l-2 border-primary/20">
                                         <p class="text-[10px] text-secondary/40 uppercase mb-1">Time to Crack</p>
-                                        <p class="text-2xl font-headline font-bold text-primary" id="crackTime">234 Years</p>
+                                        <p class="text-2xl font-headline font-bold text-primary" id="crackTime">234
+                                            Years</p>
                                     </div>
                                     <div class="bg-surface-container-low p-4 rounded border-l-2 border-secondary/20">
                                         <p class="text-[10px] text-secondary/40 uppercase mb-1">Strength Score</p>
-                                        <p class="text-2xl font-headline font-bold text-on-background" id="strengthScore">84<span class="text-sm font-normal text-secondary/40 ml-1">/100</span></p>
+                                        <p class="text-2xl font-headline font-bold text-on-background"
+                                            id="strengthScore">84<span
+                                                class="text-sm font-normal text-secondary/40 ml-1">/100</span></p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="bg-surface-container p-6 rounded-lg border border-outline-variant/10">
-                                <h3 class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-4">What to Fix</h3>
+                                <h3
+                                    class="font-headline text-xs font-bold text-secondary/60 uppercase tracking-widest mb-4">
+                                    What to Fix</h3>
                                 <div class="space-y-4" id="feedbackList">
                                     <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
                                         <div class="flex items-center gap-3 mb-2">
                                             <span class="material-symbols-outlined text-primary text-xl">security</span>
-                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Brute Force Resistance</p>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">
+                                                Brute Force Resistance</p>
                                         </div>
                                         <p class="text-secondary/60 text-xs leading-relaxed">
-                                            <span class="text-primary/80 font-bold">CRITICAL:</span> Low character diversity makes this an easy target for basic permutations. Current keyspace is too small for GPU clusters.
+                                            <span class="text-primary/80 font-bold">CRITICAL:</span> Low character
+                                            diversity makes this an easy target for basic permutations. Current keyspace
+                                            is too small for GPU clusters.
                                         </p>
                                     </div>
                                     <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
                                         <div class="flex items-center gap-3 mb-2">
                                             <span class="material-symbols-outlined text-error/60 text-xl">book</span>
-                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Dictionary Attack Risk</p>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">
+                                                Dictionary Attack Risk</p>
                                         </div>
                                         <p class="text-secondary/60 text-xs leading-relaxed">
-                                            <span class="text-error/80 font-bold">FAIL:</span> Common word sequences detected. Modern attackers use multi-terabyte wordlists to crack these in milliseconds.
+                                            <span class="text-error/80 font-bold">FAIL:</span> Common word sequences
+                                            detected. Modern attackers use multi-terabyte wordlists to crack these in
+                                            milliseconds.
                                         </p>
                                     </div>
                                     <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
                                         <div class="flex items-center gap-3 mb-2">
-                                            <span class="material-symbols-outlined text-tertiary text-xl">grid_view</span>
-                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Keyboard Patterns</p>
+                                            <span
+                                                class="material-symbols-outlined text-tertiary text-xl">grid_view</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">
+                                                Keyboard Patterns</p>
                                         </div>
                                         <p class="text-secondary/60 text-xs leading-relaxed">
-                                            <span class="text-tertiary/80 font-bold">WARNING:</span> Patterns like "qwerty" or sequential numbers are prioritised in cracking algorithms.
+                                            <span class="text-tertiary/80 font-bold">WARNING:</span> Patterns like
+                                            "qwerty" or sequential numbers are prioritised in cracking algorithms.
                                         </p>
                                     </div>
                                     <div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">
                                         <div class="flex items-center gap-3 mb-2">
-                                            <span class="material-symbols-outlined text-secondary/40 text-xl">straighten</span>
-                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">Length</p>
+                                            <span
+                                                class="material-symbols-outlined text-secondary/40 text-xl">straighten</span>
+                                            <p class="text-sm text-on-background font-bold uppercase tracking-tight">
+                                                Length</p>
                                         </div>
                                         <p class="text-secondary/60 text-xs leading-relaxed">
                                             Passwords over 12 characters are significantly harder to crack offline.
@@ -347,11 +445,15 @@
 
                     <section class="mb-12">
                         <div class="flex flex-col gap-1">
-                            <span class="font-label text-primary text-[10px] uppercase tracking-[0.2em] font-bold">Password Comparison</span>
-                            <h2 class="font-headline text-4xl font-bold tracking-tight text-on-background">Reuse Checker</h2>
+                            <span
+                                class="font-label text-primary text-[10px] uppercase tracking-[0.2em] font-bold">Password
+                                Comparison</span>
+                            <h2 class="font-headline text-4xl font-bold tracking-tight text-on-background">Reuse Checker
+                            </h2>
                         </div>
                         <p class="text-on-surface-variant mt-4 max-w-2xl leading-relaxed">
-                            Enter two passwords to see how similar they are. High similarity means if one gets cracked, the other is at risk too.
+                            Enter two passwords to see how similar they are. High similarity means if one gets cracked,
+                            the other is at risk too.
                         </p>
                     </section>
 
@@ -362,67 +464,93 @@
                             <div class="bg-surface-container border-none p-6 relative overflow-hidden group">
                                 <div class="scanning-line"></div>
                                 <div class="flex justify-between items-center mb-6">
-                                    <h3 class="font-headline text-lg font-bold text-on-surface tracking-wide flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-primary text-sm">compare_arrows</span>
+                                    <h3
+                                        class="font-headline text-lg font-bold text-on-surface tracking-wide flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-primary text-sm">compare_arrows</span>
                                         Compare Passwords
                                     </h3>
-                                    <span class="text-[10px] font-label text-primary bg-primary/10 px-2 py-0.5 tracking-wider">LIVE</span>
+                                    <span
+                                        class="text-[10px] font-label text-primary bg-primary/10 px-2 py-0.5 tracking-wider">LIVE</span>
                                 </div>
                                 <div class="space-y-4">
                                     <div class="space-y-2">
-                                        <label class="text-[10px] font-label text-outline uppercase tracking-widest">First Password</label>
+                                        <label
+                                            class="text-[10px] font-label text-outline uppercase tracking-widest">First
+                                            Password</label>
                                         <div class="relative">
                                             <input id="compareInput1"
                                                 class="w-full bg-surface-container-highest border-none focus:ring-1 focus:ring-primary/50 text-on-surface font-mono py-4 px-4 tracking-widest"
                                                 type="password" placeholder="Enter first password..." />
-                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                                                <span id="compareStrength1" class="font-headline font-bold text-sm text-secondary/40">—</span>
-                                                <span class="material-symbols-outlined text-outline text-lg cursor-pointer" id="toggleCompare1">visibility</span>
+                                            <div
+                                                class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2 items-center">
+                                                <span id="compareStrength1"
+                                                    class="font-headline font-bold text-sm text-secondary/40">—</span>
+                                                <span
+                                                    class="material-symbols-outlined text-outline text-lg cursor-pointer"
+                                                    id="toggleCompare1">visibility</span>
                                             </div>
                                         </div>
-                                        <p class="text-[10px] text-secondary/40 font-mono">Crack time: <span id="compareCrack1">—</span></p>
+                                        <p class="text-[10px] text-secondary/40 font-mono">Crack time: <span
+                                                id="compareCrack1">—</span></p>
                                     </div>
 
                                     <div class="flex justify-center -my-2 relative z-10">
-                                        <div class="bg-surface-container-highest h-8 w-8 flex items-center justify-center border border-outline-variant/20">
-                                            <span class="material-symbols-outlined text-primary text-sm">compare_arrows</span>
-                                        </div>
+                                        <button onclick="swapCompareInputs()"
+                                            class="swap-btn bg-surface-container-highest h-8 w-8 flex items-center justify-center border border-outline-variant/20 hover:bg-primary/10 transition rounded">
+                                            <span
+                                                class="material-symbols-outlined text-primary text-sm">compare_arrows</span>
+                                        </button>
                                     </div>
 
                                     <div class="space-y-2">
-                                        <label class="text-[10px] font-label text-outline uppercase tracking-widest">Second Password</label>
+                                        <label
+                                            class="text-[10px] font-label text-outline uppercase tracking-widest">Second
+                                            Password</label>
                                         <div class="relative">
                                             <input id="compareInput2"
                                                 class="w-full bg-surface-container-highest border-none focus:ring-1 focus:ring-primary/50 text-on-surface font-mono py-4 px-4 tracking-widest"
                                                 type="password" placeholder="Enter second password..." />
-                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                                                <span id="compareStrength2" class="font-headline font-bold text-sm text-secondary/40">—</span>
-                                                <span class="material-symbols-outlined text-outline text-lg cursor-pointer" id="toggleCompare2">visibility</span>
+                                            <div
+                                                class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2 items-center">
+                                                <span id="compareStrength2"
+                                                    class="font-headline font-bold text-sm text-secondary/40">—</span>
+                                                <span
+                                                    class="material-symbols-outlined text-outline text-lg cursor-pointer"
+                                                    id="toggleCompare2">visibility</span>
                                             </div>
                                         </div>
-                                        <p class="text-[10px] text-secondary/40 font-mono">Crack time: <span id="compareCrack2">—</span></p>
+                                        <p class="text-[10px] text-secondary/40 font-mono">Crack time: <span
+                                                id="compareCrack2">—</span></p>
                                     </div>
                                 </div>
 
                                 <!-- Overlap analysis -->
                                 <div class="mt-8 p-4 bg-surface-container-lowest border-l-2 border-primary/40">
-                                    <div class="text-[10px] font-label text-outline uppercase mb-3 tracking-widest">Shared Characters</div>
+                                    <div class="text-[10px] font-label text-outline uppercase mb-3 tracking-widest">
+                                        Shared Characters</div>
                                     <div class="font-mono text-xl tracking-tighter flex flex-col gap-4">
-                                        <div id="overlapPw1" class="text-secondary/30 italic text-sm">Enter passwords above...</div>
+                                        <div id="overlapPw1" class="text-secondary/30 italic text-sm">Enter passwords
+                                            above...</div>
                                         <div id="overlapPw2" class="text-secondary/30 italic text-sm"></div>
                                     </div>
                                     <div class="mt-6 flex items-center gap-4">
                                         <div class="h-1 flex-1 bg-surface-container-highest">
-                                            <div id="compareBarFill" class="h-full bg-primary w-0 shadow-[0_0_8px_rgba(0,225,171,0.5)]" style="transition: width 0.5s ease;"></div>
+                                            <div id="compareBarFill"
+                                                class="h-full bg-primary w-0 shadow-[0_0_8px_rgba(0,225,171,0.5)]"
+                                                style="transition: width 0.5s ease;"></div>
                                         </div>
-                                        <div class="text-primary font-headline font-bold text-lg" id="compareBarPct">0%</div>
+                                        <div class="text-primary font-headline font-bold text-lg" id="compareBarPct">0%
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Similarity log -->
-                            <div class="bg-surface-container-lowest p-5 font-mono text-[11px] leading-relaxed text-secondary-fixed-dim/70">
-                                <div class="flex items-center justify-between mb-3 pb-2 border-b border-outline-variant/10">
+                            <div
+                                class="bg-surface-container-lowest p-5 font-mono text-[11px] leading-relaxed text-secondary-fixed-dim/70">
+                                <div
+                                    class="flex items-center justify-between mb-3 pb-2 border-b border-outline-variant/10">
                                     <span class="text-outline uppercase tracking-widest font-label">Analysis Log</span>
                                     <span class="text-primary animate-pulse">● LIVE</span>
                                 </div>
@@ -437,26 +565,36 @@
                         <div class="lg:col-span-5 space-y-6">
 
                             <!-- Similarity gauge -->
-                            <div class="bg-surface-container-high p-8 flex flex-col items-center text-center relative overflow-hidden">
+                            <div
+                                class="bg-surface-container-high p-8 flex flex-col items-center text-center relative overflow-hidden">
                                 <div class="absolute inset-0 opacity-10 pointer-events-none"
                                     style="background-image: radial-gradient(circle at 50% 50%, #ffb4aa 0%, transparent 70%);">
                                 </div>
-                                <span class="font-label text-[10px] text-error uppercase tracking-[0.2em] font-bold mb-4">Similarity Score</span>
+                                <span
+                                    class="font-label text-[10px] text-error uppercase tracking-[0.2em] font-bold mb-4">Similarity
+                                    Score</span>
                                 <div class="relative mb-6">
                                     <svg class="w-40 h-40 transform -rotate-90">
-                                        <circle class="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="4"></circle>
-                                        <circle id="compareCircleBar" class="text-error" cx="80" cy="80" fill="transparent" r="70"
-                                            stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="440"
-                                            stroke-width="4" style="transition: stroke-dashoffset 0.5s ease;"></circle>
+                                        <circle class="text-surface-container-highest" cx="80" cy="80"
+                                            fill="transparent" r="70" stroke="currentColor" stroke-width="4"></circle>
+                                        <circle id="compareCircleBar" class="text-error" cx="80" cy="80"
+                                            fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440"
+                                            stroke-dashoffset="440" stroke-width="4"
+                                            style="transition: stroke-dashoffset 0.5s ease;"></circle>
                                     </svg>
                                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                        <span class="font-headline text-4xl font-bold text-on-surface" id="comparePct">0%</span>
-                                        <span class="font-label text-[9px] text-error font-bold tracking-widest uppercase">Overlap</span>
+                                        <span class="font-headline text-4xl font-bold text-on-surface"
+                                            id="comparePct">0%</span>
+                                        <span
+                                            class="font-label text-[9px] text-error font-bold tracking-widest uppercase">Overlap</span>
                                     </div>
                                 </div>
-                                <h4 id="compareRiskLabel" class="font-headline text-2xl font-bold text-error tracking-tight mb-2">AWAITING INPUT</h4>
+                                <h4 id="compareRiskLabel"
+                                    class="font-headline text-2xl font-bold text-error tracking-tight mb-2">AWAITING
+                                    INPUT</h4>
                                 <p class="text-on-surface-variant text-sm leading-relaxed">
-                                    High similarity means if one password is compromised, attackers can easily guess the other.
+                                    High similarity means if one password is compromised, attackers can easily guess the
+                                    other.
                                 </p>
                             </div>
 
@@ -468,19 +606,23 @@
                                     </div>
                                     <div>
                                         <h5 class="font-headline font-bold text-on-surface">The Rotation Trap</h5>
-                                        <p class="text-xs text-on-surface-variant uppercase tracking-widest font-label mt-1">Predicted pattern</p>
+                                        <p
+                                            class="text-xs text-on-surface-variant uppercase tracking-widest font-label mt-1">
+                                            Predicted pattern</p>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
                                     <div class="flex items-center gap-3 bg-surface-container-low p-3">
                                         <span class="font-mono text-xs text-outline">v1</span>
                                         <span class="font-mono text-sm text-on-surface" id="ladderV1">—</span>
-                                        <span class="material-symbols-outlined text-primary text-xs ml-auto" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                        <span class="material-symbols-outlined text-primary text-xs ml-auto"
+                                            style="font-variation-settings: 'FILL' 1;">check_circle</span>
                                     </div>
                                     <div class="flex items-center gap-3 bg-surface-container-low p-3 opacity-60">
                                         <span class="font-mono text-xs text-outline">v2</span>
                                         <span class="font-mono text-sm text-on-surface" id="ladderV2">—</span>
-                                        <span class="material-symbols-outlined text-error text-xs ml-auto">warning</span>
+                                        <span
+                                            class="material-symbols-outlined text-error text-xs ml-auto">warning</span>
                                     </div>
                                     <div class="flex items-center gap-3 bg-surface-container-low p-3 opacity-30">
                                         <span class="font-mono text-xs text-outline">v3</span>
@@ -488,8 +630,10 @@
                                         <span class="material-symbols-outlined text-outline text-xs ml-auto">lock</span>
                                     </div>
                                 </div>
-                                <p class="mt-6 text-xs text-on-secondary-container leading-relaxed italic border-l-2 border-outline-variant pl-4">
-                                    "If you change one character, you haven't changed the password—you've only given the attacker the key to the next iteration."
+                                <p
+                                    class="mt-6 text-xs text-on-secondary-container leading-relaxed italic border-l-2 border-outline-variant pl-4">
+                                    "If you change one character, you haven't changed the password—you've only given the
+                                    attacker the key to the next iteration."
                                 </p>
                             </div>
 
@@ -502,7 +646,8 @@
     </main>
 
     <!-- Bottom nav -->
-    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-[#10131a]/95 backdrop-blur-xl border-t border-[#00e1ab]/10 h-20">
+    <nav
+        class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-[#10131a]/95 backdrop-blur-xl border-t border-[#00e1ab]/10 h-20">
         <button onclick="switchView('scanner')" id="nav-scanner"
             class="nav-item active flex flex-col items-center justify-center w-full pt-2 text-slate-500">
             <span class="material-symbols-outlined text-2xl">radar</span>
@@ -519,4 +664,5 @@
     <script src="main.js"></script>
 
 </body>
+
 </html>

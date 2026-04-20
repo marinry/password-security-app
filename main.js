@@ -379,3 +379,33 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
         }
     });
 }
+
+function swapCompareInputs() {
+    const box1 = document.getElementById('compareInput1');
+    const box2 = document.getElementById('compareInput2');
+    const btn  = document.querySelector('.swap-btn');
+
+    if (!box1 || !box2) return;
+
+    // Swap values
+    const temp = box1.value;
+    box1.value = box2.value;
+    box2.value = temp;
+
+    // Animate button
+    btn.classList.add('animate-swap');
+    setTimeout(() => btn.classList.remove('animate-swap'), 450);
+
+    // Animate textboxes
+    box1.classList.add('swap-flash');
+    box2.classList.add('swap-flash');
+
+    setTimeout(() => {
+        box1.classList.remove('swap-flash');
+        box2.classList.remove('swap-flash');
+    }, 350);
+
+    // Trigger compare recalculation
+    $('#compareInput1').trigger('input');
+    $('#compareInput2').trigger('input');
+}

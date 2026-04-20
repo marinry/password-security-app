@@ -17,9 +17,9 @@ Feedback & Explanations
 [x] Add clear explanations for each weakness (dictionary, brute force, pattern)
 [x] Add improvement suggestions tied to each issue
 [/] Add "Analyzing..." loading message for better timing/flow
-[/] Prevent bad input (empty fields, whitespace, too many passwords)
+[x] Prevent bad input (empty fields, whitespace, too many passwords)
 Scoring & Visual Indicators
-[/] Add optional scoring system (0–100 or weak/medium/strong(also needs to be updated))
+[x] Add optional scoring system
 [x] Add color‐changing scale
 [x] Add text effects (fade‐in, emphasis on warnings)
 [x] Add smooth transitions when results update
@@ -29,14 +29,14 @@ Visual Design
 [x] Improve overall color layout (consistent palette, accessible contrast)
 [x] Add subtle animations (fade, slide, pulse on warnings)
 [x] Add spacing, alignment, and layout cleanup
-[ ] Make the interface responsive for mobile
+[x] Make the interface responsive for mobile
 PHASE 4 — Edge Cases & Stability (Final Polish)
 These ensure your app behaves correctly in all scenarios.
 Edge Cases
-[ ] Handle extremely long passwords
-[ ] Handle passwords with only symbols or only numbers
+[x] Handle extremely long passwords
+[x] Handle passwords with only symbols or only numbers
 [x] Handle repeated submissions without refreshing
-[/] Ensure no sensitive data is stored or logged
+[x] Ensure no sensitive data is stored or logged
 [x] Ensure performance stays under 1 second per analysis
 PHASE 5 — Final Deliverables (End of Project)
 These are for grading, not the app itself.

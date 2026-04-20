@@ -68,28 +68,24 @@ app.post('/analyze', (req, res) => {
         attackType = 'Repetition-Based Guessing';
         feedback.push('Avoid repeated characters like aaa or 111');
         scanLog.push({ time: now, type: 'error', text: 'REPETITION: Repeated characters or sequences found' });
-    } else if (password.length < 8) {
+    } else if (password.length < 8 || entropy < 28) {
         attackType = 'Brute Force Attack';
         feedback.push('Short passwords are extremely vulnerable to brute-force attacks');
         scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low complexity increases guessability' });
     } else {
         attackType = 'Harder to guess';
-        scanLog.push({ time: now, type: 'error', text: 'ASSESSMENT: Password is harder to guess' });
+        scanLog.push({ time: now, type: 'pass', text: 'ASSESSMENT: Password is harder to guess' });
     }
     if (/^[0-9]+$/.test(password)) {
         feedback.push('Avoid using numbers only — extremely easy to brute-force');
         attackType = 'Brute Force Attack';
-        scanLog.push({ time: now, type: 'error', text: 'NUMERIC ONLY: Password contains only digits' });
+        scanLog.push({ time: now, type: 'warn', text: 'NUMERIC ONLY: Password contains only digits' });
     }
     if (/^[^a-zA-Z0-9]+$/.test(password)) {
         feedback.push('Avoid using symbols only — limited character variety');
-        scanLog.push({ time: now, type: 'error', text: 'SYMBOL ONLY: Password contains only special characters' });
+        scanLog.push({ time: now, type: 'warn', text: 'SYMBOL ONLY: Password contains only special characters' });
     }
-    if (entropy < 28) {
-        attackType = 'Brute Force Attack';
-        feedback.push('Very low entropy - trivial to brute force');
-        scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low entropy' });
-    }
+   
 
 
     // Strength rating
@@ -112,7 +108,7 @@ app.post('/analyze', (req, res) => {
     else if (seconds < 86400)    crackTime = Math.round(seconds / 3600) + ' hours';
     else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
     else if (seconds < 3.15e11)  crackTime = Math.round(seconds / 31536000) + ' years';
-    else                         crackTime = Math.round(seconds / 31536000).toLocaleString() + ' years';
+    else                         crackTime = 'Longer than recorded history';
 
     // Feedback for improvement
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
