@@ -107,6 +107,26 @@ $('#passwordInput').on('input', function () {
         return;
     }
 
+    $('#strength').text('Analyzing...').css('color', '#bbc6e2');
+    $('#crackTime').text('...');
+    $('#strengthScore').html('...<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+    $('#headerStrength').text('Analyzing...').css('color', '#bbc6e2');
+
+    $('#feedbackList').html(
+        '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+        '<div class="flex items-center gap-3 mb-2">' +
+        '<span class="material-symbols-outlined text-primary text-xl">autorenew</span>' +
+        '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Analyzing</p>' +
+        '</div>' +
+        '<p class="text-secondary/60 text-xs leading-relaxed">Scanning password patterns and estimating risk...</p>' +
+        '</div>'
+    );
+
+    $('#scanner-log').html(
+        '<p class="flex gap-4"><span class="text-outline">[' + new Date().toTimeString().slice(0, 8) + ']</span>' +
+        '<span class="text-secondary/40">Analyzing...</span></p>'
+    );
+
     $.ajax({
         url: API + '/analyze',
         method: 'POST',
