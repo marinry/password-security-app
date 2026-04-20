@@ -11,37 +11,49 @@ console.log('Static files served from:', __dirname);
 
 app.post('/analyze', (req, res) => {
     const password = req.body.password || '';
-    var entropy = password.length * Math.log2(charsetSize || 1);
-    var charsetSize = 0;
-    var scanLog = [];
-    var now = new Date().toTimeString().slice(0,8);
-    scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
-    scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
 
     let strength = 'Weak';
     let feedback = [];
     let score = 0;
     let attackType = 'Unknown';
     let crackTime = 'Unknown';
+    var scanLog = [];
 
-    // Score calculation
-    if (password.length >= 8) score += 20;
-    if (password.length >= 12) score += 10;
-    if (/[A-Z]/.test(password)) score += 20;
-    if (/[a-z]/.test(password)) score += 15;
-    if (/[0-9]/.test(password)) score += 15;
-    if (/[^A-Za-z0-9]/.test(password)) score += 20;
+    if (password.length > 128) {
+    return res.json({
+        strength: 'Invalid',
+        score: 0,
+        attackType: 'N/A',
+        crackTime: 'N/A',
+        feedback: ['Password exceeds maximum length of 128 characters'],
+        scanLog: []
+    });
+    }
 
     // Entropy calculation
+    var charsetSize = 0;
     if (/[a-z]/.test(password)) charsetSize += 26;
     if (/[A-Z]/.test(password)) charsetSize += 26;
     if (/[0-9]/.test(password)) charsetSize += 10;
     if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 32;
+    var entropy = password.length * Math.log2(charsetSize || 1);
+    var now = new Date().toTimeString().slice(0,8);
+    scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
+    scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
 
-    if (entropy < 28 && attackType === 'Harder to guess') {
-        attackType = 'Brute Force Attack';
-        feedback.push('Very low entropy - trivial to brute force');
-    }
+    // Score calculation
+    if (password.length >= 8)  score += 15;
+    if (password.length >= 12) score += 10;
+    if (password.length >= 16) score += 10;
+    if (/[A-Z]/.test(password)) score += 15;
+    if (/[a-z]/.test(password)) score += 10;
+    if (/[0-9]/.test(password)) score += 15;
+    if (/[^A-Za-z0-9]/.test(password)) score += 15;
+    if (entropy >= 50) score += 10;
+    if (/password|admin|qwerty|letmein/i.test(password)) score -= 30;
+    if (/(.)\1{2,}/.test(password)) score -= 10;
+    if (/1234|abcd|qwerty/i.test(password)) score -= 20;
+    score = Math.max(0, Math.min(100, score));
 
     // Attack type detection
     if (/password|admin|qwerty|letmein|welcome/i.test(password)) {
@@ -58,10 +70,25 @@ app.post('/analyze', (req, res) => {
         scanLog.push({ time: now, type: 'error', text: 'REPETITION: Repeated characters or sequences found' });
     } else if (password.length < 8) {
         attackType = 'Brute Force Attack';
+        feedback.push('Short passwords are extremely vulnerable to brute-force attacks');
         scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low complexity increases guessability' });
     } else {
         attackType = 'Harder to guess';
         scanLog.push({ time: now, type: 'error', text: 'ASSESSMENT: Password is harder to guess' });
+    }
+    if (/^[0-9]+$/.test(password)) {
+        feedback.push('Avoid using numbers only — extremely easy to brute-force');
+        attackType = 'Brute Force Attack';
+        scanLog.push({ time: now, type: 'error', text: 'NUMERIC ONLY: Password contains only digits' });
+    }
+    if (/^[^a-zA-Z0-9]+$/.test(password)) {
+        feedback.push('Avoid using symbols only — limited character variety');
+        scanLog.push({ time: now, type: 'error', text: 'SYMBOL ONLY: Password contains only special characters' });
+    }
+    if (entropy < 28) {
+        attackType = 'Brute Force Attack';
+        feedback.push('Very low entropy - trivial to brute force');
+        scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low entropy' });
     }
 
 
@@ -85,7 +112,7 @@ app.post('/analyze', (req, res) => {
     else if (seconds < 86400)    crackTime = Math.round(seconds / 3600) + ' hours';
     else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
     else if (seconds < 3.15e11)  crackTime = Math.round(seconds / 31536000) + ' years';
-    else                         crackTime = 'Longer than recorded history';
+    else                         crackTime = Math.round(seconds / 31536000).toLocaleString() + ' years';
 
     // Feedback for improvement
     if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
