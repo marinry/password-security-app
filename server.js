@@ -1,6 +1,6 @@
 const express = require('express');
-const cors    = require('cors');
-const app     = express();
+const cors = require('cors');
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -20,14 +20,14 @@ app.post('/analyze', (req, res) => {
     var scanLog = [];
 
     if (password.length > 128) {
-    return res.json({
-        strength: 'Invalid',
-        score: 0,
-        attackType: 'N/A',
-        crackTime: 'N/A',
-        feedback: ['Password exceeds maximum length of 128 characters'],
-        scanLog: []
-    });
+        return res.json({
+            strength: 'Invalid',
+            score: 0,
+            attackType: 'N/A',
+            crackTime: 'N/A',
+            feedback: ['Password exceeds maximum length of 128 characters'],
+            scanLog: []
+        });
     }
 
     // Entropy calculation
@@ -37,12 +37,12 @@ app.post('/analyze', (req, res) => {
     if (/[0-9]/.test(password)) charsetSize += 10;
     if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 32;
     var entropy = password.length * Math.log2(charsetSize || 1);
-    var now = new Date().toTimeString().slice(0,8);
+    var now = new Date().toTimeString().slice(0, 8);
     scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
     scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
 
     // Score calculation
-    if (password.length >= 8)  score += 15;
+    if (password.length >= 8) score += 15;
     if (password.length >= 12) score += 10;
     if (password.length >= 16) score += 10;
     if (/[A-Z]/.test(password)) score += 15;
@@ -72,9 +72,6 @@ app.post('/analyze', (req, res) => {
         attackType = 'Brute Force Attack';
         feedback.push('Short passwords are extremely vulnerable to brute-force attacks');
         scanLog.push({ time: now, type: 'error', text: 'BRUTE FORCE: Low complexity increases guessability' });
-    } else {
-        attackType = 'Harder to guess';
-        scanLog.push({ time: now, type: 'pass', text: 'ASSESSMENT: Password is harder to guess' });
     }
     if (/^[0-9]+$/.test(password)) {
         feedback.push('Avoid using numbers only — extremely easy to brute-force');
@@ -85,16 +82,18 @@ app.post('/analyze', (req, res) => {
         feedback.push('Avoid using symbols only — limited character variety');
         scanLog.push({ time: now, type: 'warn', text: 'SYMBOL ONLY: Password contains only special characters' });
     }
-   
-
+    if (attackType === 'Unknown') {
+        attackType = 'Harder to guess';
+        scanLog.push({ time: now, type: 'pass', text: 'ASSESSMENT: Password is harder to guess' });
+    }
 
     // Strength rating
     if (score >= 70) {
-    strength = 'Strong';
+        strength = 'Strong';
     } else if (score >= 40) {
-    strength = 'Medium';
+        strength = 'Medium';
     } else {
-    strength = 'Weak';
+        strength = 'Weak';
     }
 
     // Crack time estimation
@@ -102,18 +101,18 @@ app.post('/analyze', (req, res) => {
     var keyspace = Math.pow(charsetSize || 1, password.length);
     var seconds = (keyspace / 2) / GUESSES_PER_SEC;
 
-    if (seconds < 1)             crackTime = 'Instantly';
-    else if (seconds < 60)       crackTime = Math.round(seconds) + ' seconds';
-    else if (seconds < 3600)     crackTime = Math.round(seconds / 60) + ' minutes';
-    else if (seconds < 86400)    crackTime = Math.round(seconds / 3600) + ' hours';
+    if (seconds < 1) crackTime = 'Instantly';
+    else if (seconds < 60) crackTime = Math.round(seconds) + ' seconds';
+    else if (seconds < 3600) crackTime = Math.round(seconds / 60) + ' minutes';
+    else if (seconds < 86400) crackTime = Math.round(seconds / 3600) + ' hours';
     else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
-    else if (seconds < 3.15e11)  crackTime = Math.round(seconds / 31536000) + ' years';
-    else                         crackTime = 'Longer than recorded history';
+    else if (seconds < 3.15e11) crackTime = Math.round(seconds / 31536000) + ' years';
+    else crackTime = 'Longer than recorded history';
 
     // Feedback for improvement
-    if (!/[A-Z]/.test(password))  feedback.push('Add uppercase letters');
-    if (!/[0-9]/.test(password))  feedback.push('Add numbers');
-    if (password.length < 8)      feedback.push('Use at least 8 characters');
+    if (!/[A-Z]/.test(password)) feedback.push('Add uppercase letters');
+    if (!/[0-9]/.test(password)) feedback.push('Add numbers');
+    if (password.length < 8) feedback.push('Use at least 8 characters');
     if (!/[a-z]/.test(password)) feedback.push('Add lowercase letters');
     if (!/[^A-Za-z0-9]/.test(password)) feedback.push('Add special characters');
     if (password.length >= 8 && password.length < 12) feedback.push('Consider using 12 or more characters for better security');
