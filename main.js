@@ -111,6 +111,12 @@ $('#passwordInput').on('input', function () {
     $('#crackTime').text('...');
     $('#strengthScore').html('...<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
     $('#headerStrength').text('Analyzing...').css('color', '#bbc6e2');
+    // Dim entropy bars during analyzing state
+    $('#entropyBars div').each(function () {
+        $(this)
+            .removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]')
+            .addClass('bg-surface-container-highest');
+    });
 
     $('#feedbackList').html(
         '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
