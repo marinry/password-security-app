@@ -39,7 +39,7 @@ Smart Feedback System
     * Increase length
     * Avoid patterns and repetition
 
-    ![Password Scanner](images/Password-Scanner.png)
+    ![Password Scanner](media/Password-Scanner.png)
 
 Password Comparison Tool
 
@@ -48,7 +48,7 @@ Password Comparison Tool
 * Risk classification (Low / Moderate / High)
 * Pattern prediction 
 
-![Password Comparison Tool](images/Compare-Passwords.png)
+![Password Comparison Tool](media/Compare-Passwords.png)
 
 Technology Stack
 
@@ -66,3 +66,6 @@ Backend:
 Other:
 
 * AJAX (for real-time analysis)
+
+## Demo
+![Aegis Sentinel Demo](./media/demo.gif)
