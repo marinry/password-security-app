@@ -91,77 +91,71 @@ $('#toggleVisibility').on('click', function () {
     }
 });
 
-var analyzeTimer;
-
 $('#passwordInput').on('input', function () {
-    clearTimeout(analyzeTimer);
-    analyzeTimer = setTimeout(() => {
+    var password = $(this).val();
+    if (!password || !password.trim()) {
+        resetScannerUI();
+        $('#headerStrength').text('No input yet').css('color', '');
+        return;
+    }
+    if (password.length > 128) {
+        $('#feedbackList').html('<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+            '<div class="flex items-center gap-3">' +
+            '<span class="material-symbols-outlined text-error/60 text-xl">block</span>' +
+            '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Password too long — max 128 characters</p></div>' +
+            '</div>');
+        return;
+    }
 
-        var password = $(this).val();
-        if (!password || !password.trim()) {
-            resetScannerUI();
-            $('#headerStrength').text('No input yet').css('color', '');
-            return;
+    /*$('#strength').text('Analyzing...').css('color', '#bbc6e2');
+    $('#crackTime').text('...');
+    $('#strengthScore').html('...<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
+    $('#headerStrength').text('Analyzing...').css('color', '#bbc6e2');
+    // Dim entropy bars during analyzing state
+    $('#entropyBars div').each(function () {
+        $(this)
+            .removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]')
+            .addClass('bg-surface-container-highest');
+    });
+
+    $('#feedbackList').html(
+        '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+        '<div class="flex items-center gap-3 mb-2">' +
+        '<span class="material-symbols-outlined text-primary text-xl">autorenew</span>' +
+        '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Analyzing</p>' +
+        '</div>' +
+        '<p class="text-secondary/60 text-xs leading-relaxed">Scanning password patterns and estimating risk...</p>' +
+        '</div>'
+    );
+
+    $('#scanner-log').html(
+        '<p class="flex gap-4"><span class="text-outline">[' + new Date().toTimeString().slice(0, 8) + ']</span>' +
+        '<span class="text-secondary/40">Analyzing...</span></p>'
+    );
+*/
+    $.ajax({
+        url: API + '/analyze',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ password: password }),
+        success: function (res) {
+            updateScannerUI(res);
+            var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
+            $('#headerStrength').text(res.strength + ' • ' + (res.attackType || 'Unknown Risk'))
+                .css('color', colorMap[res.strength] || '');
+        },
+        error: function () {
+            $('#feedbackList').html(
+                '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
+                '<div class="flex items-center gap-3 mb-2">' +
+                '<span class="material-symbols-outlined text-error/60 text-xl">warning</span>' +
+                '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Server Error</p>' +
+                '</div>' +
+                '<p class="text-secondary/60 text-xs leading-relaxed">Cannot reach the analysis server.</p>' +
+                '</div>'
+            );
         }
-        if (password.length > 128) {
-            $('#feedbackList').html('<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
-                '<div class="flex items-center gap-3">' +
-                '<span class="material-symbols-outlined text-error/60 text-xl">block</span>' +
-                '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Password too long — max 128 characters</p></div>' +
-                '</div>');
-            return;
-        }
-
-        $('#strength').text('Analyzing...').css('color', '#bbc6e2');
-        $('#crackTime').text('...');
-        $('#strengthScore').html('...<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
-        $('#headerStrength').text('Analyzing...').css('color', '#bbc6e2');
-        // Dim entropy bars during analyzing state
-        $('#entropyBars div').each(function () {
-            $(this)
-                .removeClass('bg-primary shadow-[0_0_12px_rgba(0,225,171,0.4)]')
-                .addClass('bg-surface-container-highest');
-        });
-
-        $('#feedbackList').html(
-            '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
-            '<div class="flex items-center gap-3 mb-2">' +
-            '<span class="material-symbols-outlined text-primary text-xl">autorenew</span>' +
-            '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Analyzing</p>' +
-            '</div>' +
-            '<p class="text-secondary/60 text-xs leading-relaxed">Scanning password patterns and estimating risk...</p>' +
-            '</div>'
-        );
-
-        $('#scanner-log').html(
-            '<p class="flex gap-4"><span class="text-outline">[' + new Date().toTimeString().slice(0, 8) + ']</span>' +
-            '<span class="text-secondary/40">Analyzing...</span></p>'
-        );
-
-        $.ajax({
-            url: API + '/analyze',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ password: password }),
-            success: function (res) {
-                updateScannerUI(res);
-                var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
-                $('#headerStrength').text(res.strength + ' • ' + (res.attackType || 'Unknown Risk'))
-                    .css('color', colorMap[res.strength] || '');
-            },
-            error: function () {
-                $('#feedbackList').html(
-                    '<div class="p-4 bg-surface-container-low rounded border border-outline-variant/5">' +
-                    '<div class="flex items-center gap-3 mb-2">' +
-                    '<span class="material-symbols-outlined text-error/60 text-xl">warning</span>' +
-                    '<p class="text-sm text-on-background font-bold uppercase tracking-tight">Server Error</p>' +
-                    '</div>' +
-                    '<p class="text-secondary/60 text-xs leading-relaxed">Cannot reach the analysis server.</p>' +
-                    '</div>'
-                );
-            }
-        });
-    }, 200);
+    });
 });
 
 function resetScannerUI() {
@@ -415,7 +409,7 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
 function swapCompareInputs() {
     const box1 = document.getElementById('compareInput1');
     const box2 = document.getElementById('compareInput2');
-    const btn = document.querySelector('.swap-btn');
+    const btn  = document.querySelector('.swap-btn');
 
     if (!box1 || !box2) return;
 
