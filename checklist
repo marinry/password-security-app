@@ -16,7 +16,7 @@ These features improve clarity, usability, and educational value.
 Feedback & Explanations
 [x] Add clear explanations for each weakness (dictionary, brute force, pattern)
 [x] Add improvement suggestions tied to each issue
-[/] Add "Analyzing..." loading message for better timing/flow
+[x] Add "Analyzing..." loading message for better timing/flow
 [x] Prevent bad input (empty fields, whitespace, too many passwords)
 Scoring & Visual Indicators
 [x] Add optional scoring system
