@@ -39,6 +39,8 @@ Smart Feedback System
     * Increase length
     * Avoid patterns and repetition
 
+    ![Password Scanner](images/Password Scanner.png)
+
 Password Comparison Tool
 
 * Compare two passwords
