@@ -48,6 +48,8 @@ Password Comparison Tool
 * Risk classification (Low / Moderate / High)
 * Pattern prediction 
 
+![Password Comparison Tool](images/Compare-Passwords.png)
+
 Technology Stack
 
 Frontend:
