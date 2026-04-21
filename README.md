@@ -68,4 +68,4 @@ Other:
 * AJAX (for real-time analysis)
 
 ## Demo
-![Aegis Sentinel Demo](./media/demo.gif)
+![Aegis Sentinel Demo](media/ASdemo.gif)
