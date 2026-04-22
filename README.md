@@ -82,6 +82,9 @@ https://marinry.github.io/password-security-app/
 
 Ryan Marin
 
+
 Nathan Karp
+
 Email: n.karp8@gmail.com
+
 LinkedIn: https://www.linkedin.com/in/nathan-karp-4498713a9
