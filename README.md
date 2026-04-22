@@ -1,3 +1,5 @@
+## Description
+
 Aegis Sentinel is a web-based cybersecurity tool designed to analyze password strength, detect common vulnerabilities, and educate users on secure password practices.
 
 The app simulates how attackers evaluate passwords by identifying:
@@ -9,15 +11,15 @@ The app simulates how attackers evaluate passwords by identifying:
 
 It provides real-time feedback, estimated crack times, and actionable recommendations to help users create stronger, more secure passwords.
 
-Setup Instructions:
+## Setup Instructions:
 
 Copy and paste the link into your browser
 
 https://marinry.github.io/password-security-app/
 
-Features:
+## Features:
 
-Password Analyzer
+### Password Analyzer
 
 * Real-time password strength scoring
 * Crack time estimation
@@ -25,13 +27,13 @@ Password Analyzer
 * Attack type detection (dictionary, brute force, patterns, repetition)
 * Live scanner log simulation
 
-Visual Strength Indicators
+### Visual Strength Indicators
 
 * Dynamic strength bar (entropy bars)
 * Score out of 100
 * Color-coded risk levels
 
-Smart Feedback System
+### Smart Feedback System
 
 * Actionable suggestions:
     * Add uppercase/lowercase
@@ -41,7 +43,7 @@ Smart Feedback System
 
     ![Password Scanner](media/Password-Scanner.png)
 
-Password Comparison Tool
+### Password Comparison Tool
 
 * Compare two passwords
 * Similarity percentage
@@ -50,22 +52,36 @@ Password Comparison Tool
 
 ![Password Comparison Tool](media/Compare-Passwords.png)
 
-Technology Stack
+## Technology Stack
 
-Frontend:
+### Frontend:
 
 * HTML5
 * CSS (Tailwind)
 * JavaScript (jQuery)
 
-Backend:
+### Backend:
 
 * Node.js
 * Express.js
 
-Other:
+### Other:
 
 * AJAX (for real-time analysis)
 
 ## Demo
 ![Aegis Sentinel Demo](media/ASdemo.gif)
+
+## Future Development Roadmap
+
+* Integration with real password breach databases (HaveIBeenPwned)
+* Zxcvbn integration
+* Saved password analysis history
+
+## Contact Information
+
+Ryan Marin
+
+Nathan Karp
+Email: n.karp8@gmail.com
+LinkedIn: https://www.linkedin.com/in/nathan-karp-4498713a9
