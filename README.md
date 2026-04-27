@@ -81,7 +81,7 @@ https://marinry.github.io/password-security-app/
 ## Contact Information
 
 #### Ryan Marin
-
+Email: ram7164@psu.edu<br>
 #### Nathan Karp
 Email: n.karp8@gmail.com<br>
 LinkedIn: https://www.linkedin.com/in/nathan-karp-4498713a9
