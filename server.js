@@ -89,6 +89,13 @@ app.post('/analyze', async (req, res) => {
     if (/^[0-9]+$/.test(password)) score = Math.min(score, 15);
     if (/^[^a-zA-Z0-9]+$/.test(password)) score = Math.min(score, 20);
     if (password.length < 8) score = Math.min(score, 15);
+
+    const crackSeconds = zResult.crack_times_seconds.offline_fast_hashing_1e10_per_second;
+    if (crackSeconds < 1) score = Math.min(score, 5);
+    else if (crackSeconds < 60) score = Math.min(score, 20);
+    else if (crackSeconds < 3600) score = Math.min(score, 40);
+    else if (crackSeconds < 86400) score = Math.min(score, 60);
+    else if (crackSeconds < 31536000) score = Math.min(score, 75);
     score = Math.max(0, Math.min(100, score));
 
     // Attack type detection
