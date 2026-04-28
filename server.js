@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const zxcvbn = require('zxcvbn');
+const axios  = require('axios');
+const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -9,7 +12,24 @@ app.use(express.static(__dirname));
 
 console.log('Static files served from:', __dirname);
 
-app.post('/analyze', (req, res) => {
+async function checkHIBP(password) {
+    const hash   = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
+    const prefix = hash.slice(0, 5);
+    const suffix = hash.slice(5);
+    try {
+        const response = await axios.get('https://api.pwnedpasswords.com/range/' + prefix, {
+            headers: { 'Add-Padding': 'true' },
+            timeout: 3000
+        });
+        const lines = response.data.split('\n');
+        const match = lines.find(line => line.split(':')[0] === suffix);
+        return match ? parseInt(match.split(':')[1]) : 0;
+    } catch (e) {
+        return null;
+    }
+}
+
+app.post('/analyze', async (req, res) => {
     const password = req.body.password || '';
 
     let strength = 'Weak';
