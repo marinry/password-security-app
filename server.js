@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const zxcvbn = require('zxcvbn');
-const axios  = require('axios');
+const axios = require('axios');
 const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +13,7 @@ app.use(express.static(__dirname));
 console.log('Static files served from:', __dirname);
 
 async function checkHIBP(password) {
-    const hash   = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
+    const hash = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
     const prefix = hash.slice(0, 5);
     const suffix = hash.slice(5);
     try {
@@ -61,18 +61,34 @@ app.post('/analyze', async (req, res) => {
     scanLog.push({ time: now, type: 'info', text: 'Scan started — ' + password.length + ' characters' });
     scanLog.push({ time: now, type: 'info', text: 'Entropy: ' + (entropy ? entropy.toFixed(1) : '—') + ' bits | Charset: ' + charsetSize });
 
+    const zResult = zxcvbn(password);
+    const zScore = zResult.score;
+    const zCrack = zResult.crack_times_display.offline_fast_hashing_1e10_per_second;
+    const zWarning = zResult.feedback.warning;
+    const zSuggestions = zResult.feedback.suggestions;
+
+    scanLog.push({ time: now, type: 'info', text: 'ZXCVBN: Pattern score ' + zScore + '/4 — est. crack time: ' + zCrack });
+    if (zWarning) {
+        scanLog.push({ time: now, type: 'warn', text: 'ZXCVBN: ' + zWarning });
+    }
+
+    const breachCount = await checkHIBP(password);
+    if (breachCount === null) {
+        scanLog.push({ time: now, type: 'warn', text: 'HIBP: Breach check unavailable' });
+    } else if (breachCount > 0) {
+        scanLog.push({ time: now, type: 'error', text: 'HIBP: Found in ' + breachCount.toLocaleString() + ' known data breaches' });
+        feedback.unshift('This exact password has appeared in ' + breachCount.toLocaleString() + ' data breaches — never use it');
+    } else {
+        scanLog.push({ time: now, type: 'pass', text: 'HIBP: Not found in any known breach database' });
+    }
+
     // Score calculation
-    if (password.length >= 8) score += 15;
-    if (password.length >= 12) score += 10;
-    if (password.length >= 16) score += 10;
-    if (/[A-Z]/.test(password)) score += 15;
-    if (/[a-z]/.test(password)) score += 10;
-    if (/[0-9]/.test(password)) score += 15;
-    if (/[^A-Za-z0-9]/.test(password)) score += 15;
-    if (entropy >= 50) score += 10;
-    if (/password|admin|qwerty|letmein/i.test(password)) score -= 30;
-    if (/(.)\1{2,}/.test(password)) score -= 10;
-    if (/1234|abcd|qwerty/i.test(password)) score -= 20;
+    const scoreMap = { 0: 5, 1: 20, 2: 45, 3: 75, 4: 95 };
+    score = scoreMap[zScore];
+    if (breachCount > 0) score = Math.min(score, 10);
+    if (/^[0-9]+$/.test(password)) score = Math.min(score, 15);
+    if (/^[^a-zA-Z0-9]+$/.test(password)) score = Math.min(score, 20);
+    if (password.length < 8) score = Math.min(score, 15);
     score = Math.max(0, Math.min(100, score));
 
     // Attack type detection
@@ -108,13 +124,9 @@ app.post('/analyze', async (req, res) => {
     }
 
     // Strength rating
-    if (score >= 70) {
-        strength = 'Strong';
-    } else if (score >= 40) {
-        strength = 'Medium';
-    } else {
-        strength = 'Weak';
-    }
+    if (zScore >= 3 && (breachCount === 0 || breachCount === null)) strength = 'Strong';
+    else if (zScore >= 2 && (breachCount === 0 || breachCount === null)) strength = 'Medium';
+    else strength = 'Weak';
 
     // Crack time estimation
     var GUESSES_PER_SEC = 1e10;
