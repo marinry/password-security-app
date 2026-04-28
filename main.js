@@ -160,7 +160,7 @@ $('#passwordInput').on('input', function () {
 
 function resetScannerUI() {
     $('#strength').text('Awaiting analysis').css('color', '');
-    $('#crackTime').text('—');
+    $('#crackTime').html('—');
     $('#strengthScore').html('—<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
 
     $('#entropyBars div').each(function () {
@@ -188,7 +188,15 @@ function updateScannerUI(res) {
     $('#strength').text((res.strength || 'Unknown') + ' • ' + (res.attackType || 'Unknown Risk'))
         .css('color', colorMap[res.strength] || '');
 
-    $('#crackTime').text(res.crackTime || '—');
+    if (res.crackTimes) {
+        $('#crackTime').html(
+            '<span class="block text-xs text-secondary/40 font-normal mb-1">Online attack</span>' + res.crackTimes.online +
+            '<span class="block text-xs text-secondary/40 font-normal mt-2 mb-1">Offline (secure hash)</span>' + res.crackTimes.offline +
+            '<span class="block text-xs text-secondary/40 font-normal mt-2 mb-1">Offline (weak hash)</span>' + res.crackTimes.offlineFast
+        );
+    } else {
+        $('#crackTime').text('—');
+    }
     $('#strengthScore').html(score + '<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
 
     $('#entropyBars div').each(function (i) {
@@ -413,7 +421,7 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
         success: function (res) {
             var colorMap = { Weak: '#ffb4ab', Medium: '#f9c74f', Strong: '#00e1ab' };
             $(strengthSel).text(res.strength || 'Unknown').css('color', colorMap[res.strength] || '');
-            $(crackSel).text(res.crackTime || '—');
+            $(crackSel).text(res.crackTimes ? res.crackTimes.offline : '—');
         }
     });
 }
