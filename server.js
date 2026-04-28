@@ -118,9 +118,11 @@ app.post('/analyze', async (req, res) => {
         feedback.push('Avoid using symbols only — limited character variety');
         scanLog.push({ time: now, type: 'warn', text: 'SYMBOL ONLY: Password contains only special characters' });
     }
-    if (attackType === 'Unknown') {
-        attackType = 'Harder to guess';
-        scanLog.push({ time: now, type: 'pass', text: 'ASSESSMENT: Password is harder to guess' });
+    if (attackType === 'Unknown' && zWarning) {
+        attackType = zWarning;
+    } else if (attackType === 'Unknown') {
+        attackType = zScore >= 3 ? 'Harder to guess' : 'Pattern-based attack likely';
+        scanLog.push({ time: now, type: zScore >= 3 ? 'pass' : 'warn', text: 'ASSESSMENT: ' + attackType });
     }
 
     // Strength rating
@@ -129,7 +131,7 @@ app.post('/analyze', async (req, res) => {
     else strength = 'Weak';
 
     // Crack time estimation
-    var GUESSES_PER_SEC = 1e10;
+    /*var GUESSES_PER_SEC = 1e10;
     var keyspace = Math.pow(charsetSize || 1, password.length);
     var seconds = (keyspace / 2) / GUESSES_PER_SEC;
 
@@ -139,7 +141,8 @@ app.post('/analyze', async (req, res) => {
     else if (seconds < 86400) crackTime = Math.round(seconds / 3600) + ' hours';
     else if (seconds < 31536000) crackTime = Math.round(seconds / 86400) + ' days';
     else if (seconds < 3.15e11) crackTime = Math.round(seconds / 31536000) + ' years';
-    else crackTime = 'Longer than recorded history';
+    else crackTime = 'Longer than recorded history';*/
+    crackTime = zCrack;
 
     // Feedback for improvement
     if (!/[A-Z]/.test(password)) feedback.push('Add uppercase letters');
@@ -149,11 +152,18 @@ app.post('/analyze', async (req, res) => {
     if (!/[^A-Za-z0-9]/.test(password)) feedback.push('Add special characters');
     if (password.length >= 8 && password.length < 12) feedback.push('Consider using 12 or more characters for better security');
 
+    if (zWarning && !feedback.includes(zWarning)) feedback.push(zWarning);
+    if (zSuggestions && zSuggestions.length > 0) {
+        zSuggestions.forEach(function (s) {
+            if (!feedback.includes(s)) feedback.push(s);
+        });
+    }
+
     if (feedback.length === 0) {
         feedback.push('Strong password');
     }
 
-    res.json({ strength, score, attackType, crackTime, feedback, scanLog });
+    res.json({ strength, score, attackType, crackTime, feedback, scanLog, breached: breachCount });
 });
 
 app.listen(PORT, () => {

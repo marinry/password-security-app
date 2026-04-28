@@ -203,6 +203,18 @@ function updateScannerUI(res) {
         }
     });
 
+    $('#breachBanner').remove();
+    if (res.breached && res.breached > 0) {
+        $('#feedbackList').before(
+            '<div id="breachBanner" class="p-4 bg-error-container/20 rounded border border-error/40 mb-4">' +
+            '<div class="flex items-center gap-3 mb-1">' +
+            '<span class="material-symbols-outlined text-error text-xl">gpp_bad</span>' +
+            '<p class="text-sm text-error font-bold uppercase tracking-tight">Found in ' + res.breached.toLocaleString() + ' data breaches</p>' +
+            '</div>' +
+            '<p class="text-secondary/60 text-xs pl-8">This password is publicly known. Do not use it anywhere.</p>' +
+            '</div>'
+        );
+    }
     var $list = $('#feedbackList').empty();
 
     var iconMap = {
@@ -409,7 +421,7 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
 function swapCompareInputs() {
     const box1 = document.getElementById('compareInput1');
     const box2 = document.getElementById('compareInput2');
-    const btn  = document.querySelector('.swap-btn');
+    const btn = document.querySelector('.swap-btn');
 
     if (!box1 || !box2) return;
 
