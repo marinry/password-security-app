@@ -1,4 +1,4 @@
-const API = 'https://password-security-app-production-465c.up.railway.app';
+const API = 'https://password-security-7pwvwsz4u-marinrys-projects.vercel.app';
 
 /* ══════════════════════════════════════════
    TIPS
