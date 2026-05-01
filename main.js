@@ -1,4 +1,4 @@
-const API = '';
+const API = 'https://password-security-app-lilac.vercel.app';
 /* ══════════════════════════════════════════
    TIPS
 ══════════════════════════════════════════ */
