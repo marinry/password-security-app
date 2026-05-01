@@ -1,4 +1,4 @@
-const API = 'https://password-security-app-production-465c.up.railway.app';
+const API = '';
 /* ══════════════════════════════════════════
    TIPS
 ══════════════════════════════════════════ */
@@ -106,7 +106,7 @@ $('#passwordInput').on('input', function () {
         return;
     }
 
-    /*$('#strength').text('Analyzing...').css('color', '#bbc6e2');
+    $('#strength').text('Analyzing...').css('color', '#bbc6e2');
     $('#crackTime').text('...');
     $('#strengthScore').html('...<span class="text-sm font-normal text-secondary/40 ml-1">/100</span>');
     $('#headerStrength').text('Analyzing...').css('color', '#bbc6e2');
@@ -131,9 +131,9 @@ $('#passwordInput').on('input', function () {
         '<p class="flex gap-4"><span class="text-outline">[' + new Date().toTimeString().slice(0, 8) + ']</span>' +
         '<span class="text-secondary/40">Analyzing...</span></p>'
     );
-*/
+
     $.ajax({
-        url: API + '/analyze',
+        url: API + '/api/analyze',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ password: password }),
@@ -413,7 +413,7 @@ function analyzeForCompare(strengthSel, crackSel, pw) {
     );
 
     $.ajax({
-        url: API + '/analyze',
+        url: API + '/api/analyze',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ password: pw }),
