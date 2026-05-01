@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
         scanLog.push({ time: now, type: 'pass', text: 'HIBP: Not found in any known breach database' });
     }
 
-    const scoreMap = { 0: 5, 1: 20, 2: 45, 3: 75, 4: 100 };
+    const scoreMap = { 0: 5, 1: 20, 2: 45, 3: 75, 4: 99 };
     score = scoreMap[zScore];
 
     if (breachCount > 0) score = Math.min(score, 10);
