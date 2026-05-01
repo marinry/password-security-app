@@ -83,7 +83,7 @@ app.post('/analyze', async (req, res) => {
     }
 
     // Score calculation
-    const scoreMap = { 0: 5, 1: 20, 2: 45, 3: 75, 4: 95 };
+    const scoreMap = { 0: 5, 1: 20, 2: 45, 3: 75, 4: 100 };
     score = scoreMap[zScore];
     if (breachCount > 0) score = Math.min(score, 10);
     if (/^[0-9]+$/.test(password)) score = Math.min(score, 15);
